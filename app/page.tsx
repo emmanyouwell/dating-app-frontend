@@ -1,4 +1,4 @@
-import OppoScroll from '@/components/hover/OppoScroll';
+
 import Navbar from '@/components/layout/Navbar';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import { Button } from '@/components/ui/button';

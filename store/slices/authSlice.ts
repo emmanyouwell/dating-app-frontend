@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import api from '@/lib/api';
 import { UserDetails } from '@/common/interfaces/user.interface';
-
+import { AxiosError } from 'axios';
 
 interface AuthState {
   user: UserDetails | null;
@@ -16,7 +16,9 @@ const initialState: AuthState = {
   loading: true,
   error: null,
 };
-
+interface ErrorResponse {
+  message: string;
+}
 // Async thunks
 export const loginUser = createAsyncThunk(
   'auth/login',
@@ -27,7 +29,8 @@ export const loginUser = createAsyncThunk(
     try {
       const response = await api.post('/auth/login', credentials);
       return response.data;
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as AxiosError<ErrorResponse>;
       return rejectWithValue(error.response?.data?.message || 'Login failed');
     }
   }
@@ -42,7 +45,8 @@ export const registerUser = createAsyncThunk(
     try {
       const response = await api.post('/auth/register', userData);
       return response.data;
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as AxiosError<ErrorResponse>;
       return rejectWithValue(
         error.response?.data?.message || 'Registration failed'
       );
@@ -56,7 +60,8 @@ export const logoutUser = createAsyncThunk(
     try {
       await api.post('/auth/logout');
       return null;
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as AxiosError<ErrorResponse>
       return rejectWithValue(error.response?.data?.message || 'Logout failed');
     }
   }
@@ -68,7 +73,8 @@ export const checkAuth = createAsyncThunk(
     try {
       const response = await api.get('/users/me');
       return response.data;
-    } catch (error: any) {
+    } catch (err) {
+      const error = err as AxiosError<ErrorResponse>
       return rejectWithValue(
         error.response?.data?.message || 'Auth check failed'
       );

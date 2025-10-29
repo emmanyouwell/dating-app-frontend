@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Loader } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 interface ProtectedRouteProps {
