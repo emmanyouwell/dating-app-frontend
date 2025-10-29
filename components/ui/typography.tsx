@@ -1,4 +1,15 @@
-type Variant = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'text' | 'blockquote';
+type Variant =
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'h5'
+  | 'h6'
+  | 'p'
+  | 'text'
+  | 'blockquote'
+  | 'lead'
+  | 'small';
 
 type TypographyProps = Readonly<{
   children: React.ReactNode;
@@ -11,24 +22,38 @@ export function Typography({
   className = '',
   variant = 'p',
 }: TypographyProps) {
+  const base = 'text-balance tracking-tight';
+
   const variants: Record<Variant, string> = {
-    h1: 'scroll-m-20 text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-balance',
-    h2: 'scroll-m-20 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight first:mt-0',
-    h3: 'scroll-m-20 text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight',
-    h4: 'scroll-m-20 text-lg sm:text-xl md:text-2xl font-semibold tracking-tight',
-    p: 'text-base sm:text-lg leading-7',
-    text: 'text-base',
-    blockquote: 'mt-6 border-l-2 pl-6 italic text-base sm:text-lg md:mt-4',
+    // Headings
+    h1: `${base} text-4xl sm:text-5xl md:text-6xl font-bold leading-tight scroll-m-20`,
+    h2: `${base} text-3xl sm:text-4xl font-bold leading-snug scroll-m-20`,
+    h3: `${base} text-2xl sm:text-3xl font-semibold leading-snug scroll-m-20`,
+    h4: `${base} text-xl sm:text-2xl font-semibold leading-snug scroll-m-20`,
+    h5: `${base} text-lg sm:text-xl font-medium leading-snug scroll-m-20`,
+    h6: `${base} text-base sm:text-lg font-medium uppercase tracking-wide text-foreground/70 scroll-m-20`,
+
+    // Paragraphs and text
+    p: `text-base sm:text-lg leading-7 text-foreground/90`,
+    text: `text-base text-foreground/80`,
+
+    // Supporting text styles
+    lead: `text-lg sm:text-xl text-foreground/80`,
+    small: `text-sm text-muted-foreground`,
+
+    // Blockquote
+    blockquote: `mt-6 border-l-4 border-primary/30 pl-6 italic text-base sm:text-lg text-foreground/80`,
   };
 
   const Tag =
-    variant === 'text'
+    variant === 'text' || variant === 'lead' || variant === 'small'
       ? 'span'
       : variant === 'blockquote'
       ? 'blockquote'
       : variant;
+
   return (
-    <Tag className={`${variants[variant] || variants.p} ${className}`}>
+    <Tag className={`${variants[variant]} ${className}`.trim()}>
       {children}
     </Tag>
   );
