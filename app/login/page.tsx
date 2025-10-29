@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginUser } from '@/store/slices/authSlice';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/hooks/useAuth';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
@@ -19,7 +20,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const route = useRouter();
   const dispatch = useAppDispatch();
-  const { loading, error, user } = useAppSelector((state)=>state.auth)
+  const { loading, error, user } = useAuth();
 
   const {
     register,

@@ -1,14 +1,17 @@
 
+'use client';
 import Navbar from '@/components/layout/Navbar';
-import ProtectedRoute from '@/components/ProtectedRoute';
 import { Button } from '@/components/ui/button';
 import { Typography } from '@/components/ui/typography';
 import Image from 'next/image';
 import { TextParallaxScroll } from '@/components/hover/TextParallaxScroll';
+import { useAuth } from '@/hooks/useAuth';
 export default function Home() {
+  const {isAuthenticated, loading} = useAuth();
   return (
-    <ProtectedRoute>
-      <Navbar />
+
+    <>
+      <Navbar isAuthenticated={isAuthenticated} loading={loading}/>
       <div className='flex min-h-screen items-center justify-center bg-background font-sans dark:bg-background'>
         <main className='flex min-h-screen w-full max-w-7xl flex-col items-center bg-background dark:bg-background sm:items-start p-4'>
           <section className='flex flex-col md:flex-row items-center justify-between gap-4 w-full bg-background md:px-3'>
@@ -100,6 +103,6 @@ export default function Home() {
           </section>
         </main>
       </div>
-    </ProtectedRoute>
+    </>
   );
 }

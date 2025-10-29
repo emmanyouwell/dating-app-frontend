@@ -107,7 +107,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       })
       .addCase(loginUser.rejected, (state, action) => {
-        state.loading = false;
+        state.loading = true;
         state.error = action.payload as string;
       })
       // Register
@@ -121,7 +121,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       })
       .addCase(registerUser.rejected, (state, action) => {
-        state.loading = false;
+        state.loading = true;
         state.error = action.payload as string;
       })
       // Logout
@@ -142,7 +142,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       })
       .addCase(checkAuth.rejected, (state) => {
-        state.loading = false;
+        state.loading = true;
         state.isAuthenticated = false;
         state.user = null;
       });

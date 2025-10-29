@@ -15,15 +15,15 @@ import {
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { logoutUser } from '@/store/slices/authSlice';
 import { useRouter } from 'next/navigation';
+import { Loader } from 'lucide-react';
 
-const Navbar = () => {
+const Navbar = ({isAuthenticated, loading}:{isAuthenticated: boolean; loading: boolean;}) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const {isAuthenticated} = useAppSelector((state)=>state.auth)
   const [open, setOpen] = useState(false);
   const handleLogout = () => {
     dispatch(logoutUser());
-    router.push('/login');
+    router.replace('/login');
   };
   return (
     <motion.nav
@@ -36,7 +36,7 @@ const Navbar = () => {
         <NavLink text='Home' Icon={FiHome} />
         <NavLink text='Match' Icon={FiHeart} />
         <NavLink text='Chat' Icon={FiMessageCircle} />
-        {isAuthenticated ? (
+        {loading ? <Loader className="animate-spin"/> : isAuthenticated ? (
           <NavLink text='Log out' Icon={FiLogOut} onClick={handleLogout} />
         ) : (
           <NavLink text='Log in' Icon={FiLogIn} href="/login" />
