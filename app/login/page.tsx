@@ -20,7 +20,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const route = useRouter();
   const dispatch = useAppDispatch();
-  const { loading, error, user } = useAppSelector((state)=>state.auth);
+  const { loading, error, user } = useAuth();
 
   const {
     register,
@@ -81,10 +81,10 @@ export default function LoginPage() {
 
         <button
           type='submit'
-          disabled={!loading}
+          disabled={loading}
           className='w-full bg-primary hover:bg-primary/75 hover:text-secondary-foreground hover:cursor-pointer text-white py-2 rounded transition'
         >
-          {!loading ? 'Logging in...' : 'Login'}
+          {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
     </div>

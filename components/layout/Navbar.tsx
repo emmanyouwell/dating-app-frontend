@@ -22,8 +22,7 @@ const Navbar = ({isAuthenticated, loading}:{isAuthenticated: boolean; loading: b
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const handleLogout = () => {
-    dispatch(logoutUser());
-    router.replace('/login');
+    dispatch(logoutUser()).then(()=>router.replace('/login'));
   };
   return (
     <motion.nav
