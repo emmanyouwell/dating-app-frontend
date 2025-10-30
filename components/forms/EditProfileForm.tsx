@@ -175,32 +175,32 @@ export const EditProfileForm = () => {
   };
 
   return (
-    <Card className='w-full max-w-4xl mx-auto'>
-      <Avatar className='h-52 w-52 mx-auto'>
-        <AvatarImage
-          src={user?.avatar?.url ?? '/'}
-          alt='profile picture'
-          className='object-cover object-top'
-        />
-        <AvatarFallback>
-          <Loader className='animate-spin' />
-        </AvatarFallback>
-      </Avatar>
+    <Card className='w-full lg:max-w-xl bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
       <CardHeader>
-        <CardTitle>Edit Profile</CardTitle>
-        <CardDescription>Update your profile details</CardDescription>
+        <div className='rounded-lg rounded-br-none rounded-bl-none animate-fade-down bg-primary dark:bg-primary h-[150px] w-full relative cover-photo'>
+          <div className='flex justify-center w-full absolute -top-5'>
+            <Avatar className='h-44 w-44 mx-auto'>
+              <AvatarImage
+                src={user?.avatar?.url ?? '/'}
+                alt='profile picture'
+                className='object-cover object-top'
+              />
+              <AvatarFallback>No Profile Picture</AvatarFallback>
+            </Avatar>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <form
           id='profile-form'
           onSubmit={form.handleSubmit(onSubmit)}
-          className='gap-6'
+          className='gap-6 space-y-2'
         >
           {/* Basic Info */}
-          <h3 className='text-lg font-semibold col-span-1 md:col-span-2'>
+          <h3 className='text-lg text-primary font-semibold col-span-1 md:col-span-2'>
             Basic Info
           </h3>
-          <div className='grid grid-cols-1 md:grid-cols-4 gap-4 w-full'>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-4 w-full'>
             {/* Name */}
             <Controller
               name='name'
@@ -252,28 +252,27 @@ export const EditProfileForm = () => {
                 </Field>
               )}
             />
-            {/* Avatar */}
-            <Controller
-              name='avatar'
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Avatar</FieldLabel>
-                  <input
-                    type='file'
-                    accept='image/*'
-                    onChange={(e) => field.onChange(e.target.files)}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
           </div>
-
+          {/* Avatar */}
+          <Controller
+            name='avatar'
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel>Avatar</FieldLabel>
+                <Input
+                  type='file'
+                  accept='image/*'
+                  onChange={(e) => field.onChange(e.target.files)}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
           {/* Profile Details */}
-          <h3 className='text-lg font-semibold col-span-1 md:col-span-2'>
+          <h3 className='text-lg text-primary font-semibold col-span-1 md:col-span-2'>
             Profile Details
           </h3>
           <Controller
@@ -295,7 +294,7 @@ export const EditProfileForm = () => {
           />
 
           {/* Address */}
-          <h3 className='text-lg font-semibold col-span-1 md:col-span-2'>
+          <h3 className='text-lg text-primary font-semibold col-span-1 md:col-span-2'>
             Address
           </h3>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>

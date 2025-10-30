@@ -18,6 +18,7 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
+  
   const route = useRouter();
   const dispatch = useAppDispatch();
   const { loading, error, user } = useAuth();
@@ -86,6 +87,15 @@ export default function LoginPage() {
         >
           {loading ? 'Logging in...' : 'Login'}
         </button>
+        <p className="text-sm text-center mt-4 text-gray-600">
+          Don't have an account yet?{' '}
+          <span
+            onClick={() => route.push('/register')}
+            className="text-primary font-medium hover:underline cursor-pointer"
+          >
+            Register
+          </span>
+        </p>
       </form>
     </div>
   );

@@ -49,3 +49,25 @@ export interface UserUpdateProfile {
   address?: AddressDto;
   sexualOrientation?: 'heterosexual' | 'homosexual' | 'bisexual' | 'other';
 }
+
+
+interface Address {
+    street: string;
+    brgy: string;
+    city: string;
+    location: {
+        type: string;
+        coordinates: number[]
+    }
+}
+
+export interface UserProfile {
+  name?: string;
+  isEmailVerified?: boolean;
+  avatar?: string | null;
+  address?: Address | null;
+  interests?: string[] | null;
+  birthday?: string | Date | null;
+  shortBio?: string | null;
+  gender?: 'male' | 'female' | 'other';
+}

@@ -3,89 +3,120 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loginUser } from '@/store/slices/authSlice';
+import { useAppDispatch } from '@/store/hooks';
+import { registerUser } from '@/store/slices/authSlice';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-const loginSchema = z.object({
+// ✅ Validation Schema
+const registerSchema = z.object({
+  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
   email: z.string().email({ message: 'Invalid email address' }),
-  password: z
-    .string()
-    .min(6, { message: 'Password must be at least 6 characters' }),
+  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
 });
 
-type LoginFormData = z.infer<typeof loginSchema>;
+type RegisterFormData = z.infer<typeof registerSchema>;
 
-export default function LoginPage() {
-  const route = useRouter();
+export default function RegisterForm() {
+  const router = useRouter();
   const dispatch = useAppDispatch();
-  const { loading, error, user } = useAuth();
+  const { loading, error } = useAuth();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    dispatch(loginUser(data)).then((res) => {
-      if (res.payload.success) {
-        route.push('/');
-      }
-    });
+  const onSubmit = async (data: RegisterFormData) => {
+    const result = await dispatch(registerUser(data));
+
+    if (result.payload?.success) {
+      router.push('/');
+    }
   };
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gray-100'>
+    <div className="flex min-h-screen items-center justify-center bg-gray-50">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className='bg-white shadow-md rounded-lg p-8 w-full max-w-sm'
+        className="bg-white shadow-lg rounded-xl p-8 w-full max-w-sm border border-gray-200"
       >
-        <h2 className='text-xl font-semibold mb-6 text-center'>Login</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
+          Create an Account
+        </h2>
 
-        <div className='mb-4'>
-          <label className='block text-gray-700'>Email</label>
-          <input
-            type='email'
+        {/* Name */}
+        <div className="mb-4">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            type="text"
+            {...register('name')}
+            placeholder="John Doe"
+            className="mt-1"
+          />
+          {errors.name && (
+            <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+          )}
+        </div>
+
+        {/* Email */}
+        <div className="mb-4">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
             {...register('email')}
-            className='mt-1 block w-full rounded border border-gray-300 p-2'
+            placeholder="you@example.com"
+            className="mt-1"
           />
           {errors.email && (
-            <p className='text-red-500 text-sm mt-1'>{errors.email.message}</p>
+            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
           )}
         </div>
 
-        <div className='mb-4'>
-          <label className='block text-gray-700'>Password</label>
-          <input
-            type='password'
+        {/* Password */}
+        <div className="mb-6">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
             {...register('password')}
-            className='mt-1 block w-full rounded border border-gray-300 p-2'
+            placeholder="••••••••"
+            className="mt-1"
           />
           {errors.password && (
-            <p className='text-red-500 text-sm mt-1'>
-              {errors.password.message}
-            </p>
+            <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
           )}
         </div>
 
-        {error && <p className='text-red-600 text-center mb-4'>{error}</p>}
-        {user && (
-          <p className='text-green-600 text-center mb-4'>
-            Welcome, {user.email}!
-          </p>
-        )}
+        {/* Error Message */}
+        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
 
-        <button
-          type='submit'
+        {/* Submit Button */}
+        <Button
+          type="submit"
           disabled={loading}
-          className='w-full bg-primary hover:bg-primary/75 hover:text-secondary-foreground hover:cursor-pointer text-white py-2 rounded transition'
+          className="w-full bg-primary text-white hover:bg-primary/90"
         >
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
+          {loading ? 'Registering...' : 'Register'}
+        </Button>
+
+        <p className="text-sm text-center mt-4 text-gray-600">
+          Already have an account?{' '}
+          <span
+            onClick={() => router.push('/login')}
+            className="text-primary font-medium hover:underline cursor-pointer"
+          >
+            Login
+          </span>
+        </p>
       </form>
     </div>
   );

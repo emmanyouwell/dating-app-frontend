@@ -5,7 +5,10 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { fetchUserPreferences, updateUserPreferences } from '@/store/slices/userSlice';
+import {
+  fetchUserPreferences,
+  updateUserPreferences,
+} from '@/store/slices/userSlice';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -24,7 +27,14 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { Card, CardContent } from '../ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '../ui/card';
 import { Checkbox } from '../ui/checkbox';
 // -------------------------
 // ✅ Zod Schema
@@ -74,7 +84,7 @@ export default function EditPreferencesForm() {
   // Sync existing preferences if they change
   useEffect(() => {
     if (preferences) {
-        console.log(preferences.minAge)
+      console.log(preferences.minAge);
       form.reset({
         minAge: preferences.minAge,
         maxAge: preferences.maxAge,
@@ -101,10 +111,18 @@ export default function EditPreferencesForm() {
   // ✅ JSX
   // -------------------------
   return (
-    <Card>
+    <Card className='w-full bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
+      <CardHeader>
+        <CardTitle>Preferences</CardTitle>
+        <CardDescription>Update your preferences</CardDescription>
+      </CardHeader>
+
       <CardContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className='space-y-6'
+          >
             {/* Min Age */}
             <FormField
               control={form.control}
@@ -212,23 +230,22 @@ export default function EditPreferencesForm() {
                 </FormItem>
               )}
             />
-
-            <div className='pt-2'>
-              <Button type='submit' className='w-full' disabled={loading}>
-                {loading ? 'Saving...' : 'Save Preferences'}
-              </Button>
-            </div>
-
-            {error && (
-              <p className='text-sm text-destructive mt-2'>
-                {typeof error === 'string'
-                  ? error
-                  : 'An unexpected error occurred'}
-              </p>
-            )}
           </form>
         </Form>
       </CardContent>
+      <CardFooter>
+        <div className='pt-2'>
+          <Button type='submit' className='w-full' disabled={loading}>
+            {loading ? 'Saving...' : 'Save Preferences'}
+          </Button>
+        </div>
+
+        {error && (
+          <p className='text-sm text-destructive mt-2'>
+            {typeof error === 'string' ? error : 'An unexpected error occurred'}
+          </p>
+        )}
+      </CardFooter>
     </Card>
   );
 }
