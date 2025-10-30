@@ -20,7 +20,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const route = useRouter();
   const dispatch = useAppDispatch();
-  const { loading, error, user } = useAuth();
+  const { loading, error, user } = useAppSelector((state)=>state.auth);
 
   const {
     register,
@@ -31,7 +31,11 @@ export default function LoginPage() {
   });
 
   const onSubmit = (data: LoginFormData) => {
-    dispatch(loginUser(data)).then(() => route.push('/'));
+    dispatch(loginUser(data)).then((res) => {
+      if (res.payload.success) {
+        route.push('/');
+      }
+    });
   };
 
   return (

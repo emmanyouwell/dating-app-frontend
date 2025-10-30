@@ -1,0 +1,479 @@
+'use client';
+import { useEffect, useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import {
+  fetchInterests,
+  fetchGeocode,
+  updateProfile,
+} from '@/store/slices/profileSlice';
+import { toast } from 'sonner';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@/components/ui/card';
+import {
+  Field,
+  FieldLabel,
+  FieldError,
+  FieldGroup,
+} from '@/components/ui/field';
+import {
+  Command,
+  CommandInput,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from '@/components/ui/command';
+import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
+import { Button } from '../ui/button';
+import { Loader } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import { ScrollArea } from '../ui/scroll-area';
+import { UserUpdateProfile } from '@/common/interfaces/user.interface';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+
+// ---------- Zod Schema ----------
+const formSchema = z.object({
+  name: z.string().optional(),
+  birthday: z.string().optional(),
+  shortBio: z.string().max(160).optional(),
+  gender: z.enum(['male', 'female', 'other']).optional(),
+  avatar: z.any().optional(),
+  interests: z.array(z.string()).optional(),
+  address: z
+    .object({
+      street: z.string().optional(),
+      brgy: z.string().optional(),
+      city: z.string().optional(),
+      location: z
+        .object({
+          displayName: z.string(),
+          lon: z.number(),
+          lat: z.number(),
+        })
+        .optional(),
+    })
+    .optional(),
+});
+
+// ---------- Component ----------
+export const EditProfileForm = () => {
+  const DEBOUNCE_DELAY = 500;
+  const dispatch = useAppDispatch();
+  const { interests, geocodeResults, loading } = useAppSelector(
+    (state) => state.profile
+  );
+  const user = useAppSelector((state) => state.auth.user);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: user?.name || '',
+      birthday: user?.birthday
+        ? new Date(user.birthday).toISOString().slice(0, 10)
+        : '',
+      shortBio: user?.shortBio || '',
+      gender: user?.gender || 'other',
+      avatar: undefined,
+      interests: user?.interests.map((i) => i._id) || [],
+      address: {
+        street: user?.address?.street || '',
+        brgy: user?.address?.brgy || '',
+        city: user?.address?.city || '',
+        location: user?.address?.location
+          ? {
+              displayName: `${user.address.street}, ${user.address.city}`,
+              lon: user.address.location.coordinates[0],
+              lat: user.address.location.coordinates[1],
+            }
+          : { displayName: '', lon: 0, lat: 0 },
+      },
+    },
+  });
+
+  // Fetch interests
+  useEffect(() => {
+    dispatch(fetchInterests());
+  }, [dispatch]);
+
+  // Debounced geocode fetch
+  const street = form.watch('address.street');
+  const city = form.watch('address.city');
+  const brgy = form.watch('address.brgy');
+  useEffect(() => {
+    if (!street || !city || !brgy) return;
+    const handler = setTimeout(
+      () => dispatch(fetchGeocode({ street, city })),
+      DEBOUNCE_DELAY
+    );
+    return () => clearTimeout(handler);
+  }, [street, city, brgy, dispatch]);
+
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    try {
+      const formData = new FormData();
+      const interests = data.interests?.length
+        ? data.interests.map((id) => id) // backend DTO handles ObjectId conversion
+        : undefined;
+      // Non-file fields
+      if (data.name) formData.append('name', data.name);
+      if (data.birthday)
+        formData.append('birthday', new Date(data.birthday).toISOString());
+      if (data.shortBio) formData.append('shortBio', data.shortBio);
+      if (data.gender) formData.append('gender', data.gender);
+
+      // Interests (send as JSON string)
+      if (data.interests?.length)
+        formData.append('interests', JSON.stringify(interests));
+
+      if (data.address) {
+        const addressPayload = {
+          street: data.address.street || undefined,
+          brgy: data.address.brgy || undefined,
+          city: data.address.city || undefined,
+          location:
+            data.address.location &&
+            data.address.location.lon &&
+            data.address.location.lat
+              ? {
+                  type: 'Point',
+                  coordinates: [
+                    data.address.location.lon,
+                    data.address.location.lat,
+                  ],
+                }
+              : undefined,
+        };
+        
+
+        formData.append('address', JSON.stringify(addressPayload));
+      }
+
+      // Avatar file
+      if (data.avatar?.length) {
+        // field.avatar is FileList
+        formData.append('avatar', data.avatar[0]);
+      }
+
+      // Send PATCH request
+      dispatch(updateProfile(formData));
+      toast.success('Profile updated successfully!');
+    } catch (err: any) {
+      console.error(err);
+      toast.error(err?.response?.data?.message || 'Failed to update profile');
+    }
+  };
+
+  return (
+    <Card className='w-full max-w-4xl mx-auto'>
+      <Avatar className="h-52 w-52 mx-auto">
+        <AvatarImage src={user?.avatar?.url ?? '/'} alt="profile picture" className="object-cover object-top"/>
+        <AvatarFallback><Loader className="animate-spin"/></AvatarFallback>
+      </Avatar>
+      <CardHeader>
+        <CardTitle>Edit Profile</CardTitle>
+        <CardDescription>Update your profile details</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form
+          id='profile-form'
+          onSubmit={form.handleSubmit(onSubmit)}
+          className='gap-6'
+        >
+          {/* Basic Info */}
+          <h3 className='text-lg font-semibold col-span-1 md:col-span-2'>
+            Basic Info
+          </h3>
+          <div className='grid grid-cols-1 md:grid-cols-4 gap-4 w-full'>
+            {/* Name */}
+            <Controller
+              name='name'
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel>Name</FieldLabel>
+                  <Input {...field} placeholder='John Doe' />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            {/* Birthday */}
+            <Controller
+              name='birthday'
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel>Birthday</FieldLabel>
+                  <Input {...field} type='date' />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            {/* Gender */}
+            <Controller
+              name='gender'
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel>Gender</FieldLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select gender' />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value='male'>Male</SelectItem>
+                      <SelectItem value='female'>Female</SelectItem>
+                      <SelectItem value='other'>Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            {/* Avatar */}
+            <Controller
+              name='avatar'
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel>Avatar</FieldLabel>
+                  <input
+                    type='file'
+                    accept='image/*'
+                    onChange={(e) => field.onChange(e.target.files)}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </div>
+
+          {/* Profile Details */}
+          <h3 className='text-lg font-semibold col-span-1 md:col-span-2'>
+            Profile Details
+          </h3>
+          <Controller
+            name='shortBio'
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel>Short Bio</FieldLabel>
+                <Textarea
+                  {...field}
+                  placeholder='Tell us about yourself'
+                  rows={3}
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
+
+          {/* Address */}
+          <h3 className='text-lg font-semibold col-span-1 md:col-span-2'>
+            Address
+          </h3>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
+            <Controller
+              name='address.street'
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel>Street</FieldLabel>
+                  <Input {...field} placeholder='123 Main St' />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name='address.brgy'
+              control={form.control}
+              render={({ field }) => (
+                <Field>
+                  <FieldLabel>Brgy</FieldLabel>
+                  <Input {...field} placeholder='Barangay' />
+                </Field>
+              )}
+            />
+            <Controller
+              name='address.city'
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel>City</FieldLabel>
+                  <Input {...field} placeholder='City' />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </div>
+
+          {/* Geocode selection */}
+          {loading ? (
+            <Loader className='animate-spin' />
+          ) : (
+            geocodeResults.length > 0 && (
+              <Controller
+                name='address.location'
+                control={form.control}
+                render={({ field }) => {
+                  const selectedIndex = geocodeResults.findIndex(
+                    (r) =>
+                      parseFloat(r.lon) === field.value?.lon &&
+                      parseFloat(r.lat) === field.value?.lat
+                  );
+
+                  return (
+                    <Field>
+                      <FieldLabel>Select Your Location</FieldLabel>
+                      <select
+                        value={selectedIndex >= 0 ? selectedIndex : ''}
+                        onChange={(e) => {
+                          const selected =
+                            geocodeResults[parseInt(e.target.value)];
+                          field.onChange({
+                            displayName: selected.display_name,
+                            lon: parseFloat(selected.lon),
+                            lat: parseFloat(selected.lat),
+                          });
+                        }}
+                        className='border rounded p-2 w-full text-black'
+                      >
+                        <option value='' disabled>
+                          Select a location...
+                        </option>
+                        {geocodeResults.map((loc, idx) => (
+                          <option key={idx} value={idx}>
+                            {loc.display_name}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                  );
+                }}
+              />
+            )
+          )}
+
+          {/* Interests Multi-select */}
+          <Controller
+            name='interests'
+            control={form.control}
+            render={({ field, fieldState }) => {
+              const [search, setSearch] = useState('');
+              const filtered = search
+                ? interests.filter((i) => {
+                    const name = i.name?.toLowerCase() || '';
+                    const category = i.category?.toLowerCase() || '';
+                    const query = search.toLowerCase();
+                    return name.includes(query) || category.includes(query);
+                  })
+                : [];
+
+              // Map selected IDs to names
+              const selectedInterests = interests.filter((i) =>
+                field.value?.includes(i._id)
+              );
+
+              return (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel>Interests</FieldLabel>
+                  <Command>
+                    <CommandInput
+                      placeholder='Search interests...'
+                      value={search}
+                      onValueChange={setSearch}
+                    />
+                    {search && filtered.length === 0 && (
+                      <CommandEmpty>No results found</CommandEmpty>
+                    )}
+                    {search && filtered.length > 0 && (
+                      <CommandGroup>
+                        <ScrollArea className='h-96'>
+                          {filtered.map((i) => {
+                            const selected = field.value?.includes(i._id);
+                            return (
+                              <CommandItem
+                                key={i._id}
+                                onSelect={() => {
+                                  const newValue = selected
+                                    ? field.value?.filter((v) => v !== i._id)
+                                    : [...(field.value || []), i._id];
+                                  field.onChange(newValue);
+                                }}
+                              >
+                                <input
+                                  type='checkbox'
+                                  checked={selected}
+                                  readOnly
+                                />{' '}
+                                {i.name} ({i.category})
+                              </CommandItem>
+                            );
+                          })}
+                        </ScrollArea>
+                      </CommandGroup>
+                    )}
+                  </Command>
+
+                  {/* Preview of selected interests */}
+                  {selectedInterests.length > 0 && (
+                    <div className='mt-2 flex flex-wrap gap-2'>
+                      {selectedInterests.map((i) => (
+                        <span
+                          key={i._id}
+                          className='px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm'
+                        >
+                          {i.name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              );
+            }}
+          />
+        </form>
+      </CardContent>
+      <CardFooter className='flex justify-end gap-2'>
+        <Button type='button' variant='outline' onClick={() => form.reset()}>
+          Reset
+        </Button>
+        <Button type='submit' form='profile-form'>
+          Submit
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+};

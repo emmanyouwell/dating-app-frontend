@@ -1,4 +1,9 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, {
+  AxiosInstance,
+  InternalAxiosRequestConfig,
+  AxiosResponse,
+  AxiosRequestHeaders,
+} from 'axios';
 
 /**
  * API client configuration and setup
@@ -7,9 +12,6 @@ import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosResponse } from 
 const api: AxiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
   withCredentials: true, // This enables HTTP-only cookies for security
-  headers: {
-    'Content-Type': 'application/json',
-  },
   timeout: 10000, // 10 second timeout
 });
 
@@ -20,9 +22,21 @@ const api: AxiosInstance = axios.create({
  */
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
+    // Ensure headers object exists and is properly typed
+    if (!config.headers) {
+      config.headers = {} as AxiosRequestHeaders;
+    }
+
+    // Only set Content-Type if not provided
+    if (!config.headers['Content-Type']) {
+      (config.headers as AxiosRequestHeaders)['Content-Type'] =
+        'application/json';
+    }
     // For HTTP-only cookies, we don't need to manually add the token
     // The browser will automatically include the cookie
-    console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`);
+    console.log(
+      `🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`
+    );
     return config;
   },
   (error) => {
@@ -42,16 +56,20 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    console.error('❌ API Error:', error.response?.status, error.response?.data);
-    
+    console.error(
+      '❌ API Error:',
+      error.response?.status,
+      error.response?.data
+    );
+
     if (error.response?.status === 401) {
       // Token expired or invalid, redirect to login
       if (typeof window !== 'undefined') {
-        console.log('🔐 Authentication failed, redirecting to login');
+        console.log('🔐 Authentication failed');
         // window.location.href = '/login';
       }
     }
-    
+
     return Promise.reject(error);
   }
 );

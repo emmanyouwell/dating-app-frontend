@@ -33,7 +33,7 @@ const Navbar = ({isAuthenticated, loading}:{isAuthenticated: boolean; loading: b
     >
       <MenuButton setOpen={setOpen} open={open} />
       <div className='flex gap-6 px-6'>
-        <NavLink text='Home' Icon={FiHome} />
+        <NavLink text='Home' Icon={FiHome} href="/"/>
         <NavLink text='Match' Icon={FiHeart} />
         <NavLink text='Chat' Icon={FiMessageCircle} />
         {loading ? <Loader className="animate-spin"/> : isAuthenticated ? (
@@ -139,7 +139,7 @@ const Menu = () => {
       </div>
       <div className='flex flex-col gap-2 w-1/3'>
         <SectionTitle text='Profile' />
-        <MenuLink text='View Profile' />
+        <MenuLink text='View Profile' href="/profile"/>
       </div>
       <div className='flex flex-col gap-2 w-1/3'>
         <SectionTitle text='Preferences' />
@@ -163,11 +163,11 @@ const SectionTitle = ({ text }: { text: string }) => {
   );
 };
 
-const MenuLink = ({ text }: { text: string }) => {
+const MenuLink = ({ text, href }: { text: string; href?: string; }) => {
   return (
     <motion.a
       variants={menuLinkVariants}
-      href='#'
+      href={href? href: '#'}
       rel='nofollow'
       className='text-sm hover:text-indigo-500 transition-colors flex items-center gap-2'
     >
