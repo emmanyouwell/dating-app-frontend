@@ -129,23 +129,16 @@ const Menu = () => {
     <motion.div
       variants={menuVariants}
       style={{ transformOrigin: 'bottom', x: '-50%' }}
-      className='p-8 rounded-md bg-white shadow-lg absolute bottom-[125%] left-[50%] flex w-[calc(100vw-48px)] max-w-lg'
+      className='p-8 rounded-md bg-white shadow-lg absolute bottom-[125%] left-[50%] flex w-full max-w-lg'
     >
-      <div className='flex flex-col gap-2 w-1/3'>
+      <div className='flex flex-col gap-2 w-1/2'>
         <SectionTitle text='Settings' />
         <MenuLink text='Dark Mode' />
         <MenuLink text='Blocked Users' />
       </div>
-      <div className='flex flex-col gap-2 w-1/3'>
+      <div className='flex flex-col gap-2 w-1/2'>
         <SectionTitle text='Profile' />
         <MenuLink text='View Profile' href="/profile"/>
-      </div>
-      <div className='flex flex-col gap-2 w-1/3'>
-        <SectionTitle text='Preferences' />
-        <MenuLink text='Min Age' />
-        <MenuLink text='Max Age' />
-        <MenuLink text='Max Distance' />
-        <MenuLink text='Gender Preferences' />
       </div>
     </motion.div>
   );

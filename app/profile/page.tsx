@@ -1,4 +1,5 @@
 'use client';
+import EditPreferencesForm from '@/components/forms/EditPreferencesForm';
 import { EditProfileForm } from '@/components/forms/EditProfileForm';
 import Navbar from '@/components/layout/Navbar';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -16,8 +17,9 @@ const page = () => {
     <ProtectedRoute>
       <Navbar isAuthenticated={isAuthenticated} loading={loading} />
       <div className='flex min-h-screen items-center justify-center bg-background font-sans dark:bg-background'>
-        <main className='flex min-h-screen w-full max-w-7xl flex-col items-center bg-background dark:bg-background sm:items-start p-4'>
+        <main className='flex min-h-screen w-full max-w-7xl justify-between bg-background dark:bg-background sm:items-start p-4'>
           <EditProfileForm />
+          <EditPreferencesForm/>
         </main>
       </div>
     </ProtectedRoute>

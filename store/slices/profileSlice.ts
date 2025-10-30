@@ -1,7 +1,7 @@
 // store/slices/profileSlice.ts
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '@/lib/api';
-import { UserUpdateProfile } from '@/common/interfaces/user.interface';
+
 
 export const fetchInterests = createAsyncThunk(
   'profile/fetchInterests',
@@ -19,25 +19,6 @@ export const fetchGeocode = createAsyncThunk(
     return res.data
   }
 );
-// ---------- Async thunk ----------
-export const updateProfile = createAsyncThunk<UserUpdateProfile, FormData>(
-  'profile/updateProfile',
-  async (data: FormData, { rejectWithValue }) => {
-    try {
-      const response = await api.patch('/users/me', data, {
-        headers: {'Content-Type': 'multipart/form-data'}
-      });
-      return response.data;
-    } catch (err: unknown) {
-       // Narrow unknown error
-      if (err instanceof Error) {
-        return rejectWithValue(err.message);
-      }
-      return rejectWithValue('Failed to update profile');
-    }
-  }
-);
-
 interface Interest {
   _id: string;
   name: string;
@@ -95,7 +76,8 @@ const profileSlice = createSlice({
       .addCase(fetchGeocode.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Failed to fetch geocode';
-      });
+      })
+     
   },
 });
 

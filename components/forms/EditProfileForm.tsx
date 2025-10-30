@@ -4,11 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import {
-  fetchInterests,
-  fetchGeocode,
-  updateProfile,
-} from '@/store/slices/profileSlice';
+import { fetchInterests, fetchGeocode } from '@/store/slices/profileSlice';
 import { toast } from 'sonner';
 import {
   Card,
@@ -45,6 +41,8 @@ import {
 import { ScrollArea } from '../ui/scroll-area';
 import { UserUpdateProfile } from '@/common/interfaces/user.interface';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { updateProfile } from '@/store/slices/userSlice';
+import { useAuth } from '@/hooks/useAuth';
 
 // ---------- Zod Schema ----------
 const formSchema = z.object({
@@ -78,7 +76,7 @@ export const EditProfileForm = () => {
     (state) => state.profile
   );
   const user = useAppSelector((state) => state.auth.user);
-
+  const { updateLoading } = useAppSelector((state) => state.user);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -123,7 +121,7 @@ export const EditProfileForm = () => {
     return () => clearTimeout(handler);
   }, [street, city, brgy, dispatch]);
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
       const formData = new FormData();
       const interests = data.interests?.length
@@ -136,9 +134,8 @@ export const EditProfileForm = () => {
       if (data.shortBio) formData.append('shortBio', data.shortBio);
       if (data.gender) formData.append('gender', data.gender);
 
-      // Interests (send as JSON string)
-      if (data.interests?.length)
-        formData.append('interests', JSON.stringify(interests));
+      // Interests (send as JSON string, even if empty)
+      formData.append('interests', JSON.stringify(interests || []));
 
       if (data.address) {
         const addressPayload = {
@@ -158,7 +155,6 @@ export const EditProfileForm = () => {
                 }
               : undefined,
         };
-        
 
         formData.append('address', JSON.stringify(addressPayload));
       }
@@ -170,7 +166,7 @@ export const EditProfileForm = () => {
       }
 
       // Send PATCH request
-      dispatch(updateProfile(formData));
+      await dispatch(updateProfile(formData)).unwrap();
       toast.success('Profile updated successfully!');
     } catch (err: any) {
       console.error(err);
@@ -180,9 +176,15 @@ export const EditProfileForm = () => {
 
   return (
     <Card className='w-full max-w-4xl mx-auto'>
-      <Avatar className="h-52 w-52 mx-auto">
-        <AvatarImage src={user?.avatar?.url ?? '/'} alt="profile picture" className="object-cover object-top"/>
-        <AvatarFallback><Loader className="animate-spin"/></AvatarFallback>
+      <Avatar className='h-52 w-52 mx-auto'>
+        <AvatarImage
+          src={user?.avatar?.url ?? '/'}
+          alt='profile picture'
+          className='object-cover object-top'
+        />
+        <AvatarFallback>
+          <Loader className='animate-spin' />
+        </AvatarFallback>
       </Avatar>
       <CardHeader>
         <CardTitle>Edit Profile</CardTitle>
@@ -388,6 +390,8 @@ export const EditProfileForm = () => {
             control={form.control}
             render={({ field, fieldState }) => {
               const [search, setSearch] = useState('');
+              const [isOpen, setIsOpen] = useState(false);
+
               const filtered = search
                 ? interests.filter((i) => {
                     const name = i.name?.toLowerCase() || '';
@@ -397,61 +401,92 @@ export const EditProfileForm = () => {
                   })
                 : [];
 
-              // Map selected IDs to names
               const selectedInterests = interests.filter((i) =>
                 field.value?.includes(i._id)
               );
 
+              const handleSelect = (id: string) => {
+                const isSelected = field.value?.includes(id);
+                const newValue = isSelected
+                  ? field.value?.filter((v: string) => v !== id)
+                  : [...(field.value || []), id];
+
+                field.onChange(newValue);
+                setSearch(''); // ✅ Clear search input
+                setIsOpen(false); // ✅ Hide list
+              };
+
+              const handleRemove = (id: string) => {
+                const newValue = field.value?.filter((v: string) => v !== id);
+                field.onChange(newValue);
+              };
+
               return (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel>Interests</FieldLabel>
-                  <Command>
+
+                  <Command shouldFilter={false}>
                     <CommandInput
                       placeholder='Search interests...'
                       value={search}
-                      onValueChange={setSearch}
+                      onValueChange={(value) => {
+                        setSearch(value);
+                        setIsOpen(Boolean(value));
+                      }}
                     />
-                    {search && filtered.length === 0 && (
-                      <CommandEmpty>No results found</CommandEmpty>
-                    )}
-                    {search && filtered.length > 0 && (
-                      <CommandGroup>
-                        <ScrollArea className='h-96'>
-                          {filtered.map((i) => {
-                            const selected = field.value?.includes(i._id);
-                            return (
-                              <CommandItem
-                                key={i._id}
-                                onSelect={() => {
-                                  const newValue = selected
-                                    ? field.value?.filter((v) => v !== i._id)
-                                    : [...(field.value || []), i._id];
-                                  field.onChange(newValue);
-                                }}
-                              >
-                                <input
-                                  type='checkbox'
-                                  checked={selected}
-                                  readOnly
-                                />{' '}
-                                {i.name} ({i.category})
-                              </CommandItem>
-                            );
-                          })}
-                        </ScrollArea>
-                      </CommandGroup>
+
+                    {isOpen && (
+                      <>
+                        {search && filtered.length === 0 && (
+                          <CommandEmpty>No results found</CommandEmpty>
+                        )}
+                        {search && filtered.length > 0 && (
+                          <CommandGroup>
+                            <ScrollArea className='h-96'>
+                              {filtered.map((i) => {
+                                const selected = field.value?.includes(i._id);
+                                return (
+                                  <CommandItem
+                                    key={i._id}
+                                    onSelect={() => handleSelect(i._id)}
+                                    className='flex items-center gap-2'
+                                  >
+                                    <input
+                                      type='checkbox'
+                                      checked={selected}
+                                      readOnly
+                                      className='pointer-events-none'
+                                    />
+                                    <span>
+                                      {i.name} ({i.category})
+                                    </span>
+                                  </CommandItem>
+                                );
+                              })}
+                            </ScrollArea>
+                          </CommandGroup>
+                        )}
+                      </>
                     )}
                   </Command>
 
-                  {/* Preview of selected interests */}
+                  {/* Selected Interests Preview */}
                   {selectedInterests.length > 0 && (
                     <div className='mt-2 flex flex-wrap gap-2'>
                       {selectedInterests.map((i) => (
                         <span
                           key={i._id}
-                          className='px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm'
+                          className='flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm'
                         >
                           {i.name}
+                          <button
+                            type='button'
+                            onClick={() => handleRemove(i._id)}
+                            className='hover:text-red-500 focus:outline-none'
+                            aria-label={`Remove ${i.name}`}
+                          >
+                            ✕
+                          </button>
                         </span>
                       ))}
                     </div>
@@ -466,12 +501,9 @@ export const EditProfileForm = () => {
           />
         </form>
       </CardContent>
-      <CardFooter className='flex justify-end gap-2'>
-        <Button type='button' variant='outline' onClick={() => form.reset()}>
-          Reset
-        </Button>
-        <Button type='submit' form='profile-form'>
-          Submit
+      <CardFooter className='flex justify-start gap-2'>
+        <Button type='submit' form='profile-form' disabled={updateLoading}>
+          {updateLoading ? 'Saving...' : 'Save'}
         </Button>
       </CardFooter>
     </Card>
