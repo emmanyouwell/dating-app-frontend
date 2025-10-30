@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { UserDetails, UserUpdateProfile } from '@/common/interfaces/user.interface';
+import {
+  UserDetails,
+  UserUpdateProfile,
+} from '@/common/interfaces/user.interface';
 import axios, { AxiosError } from 'axios';
 import api from '@/lib/api';
 
@@ -20,6 +23,8 @@ export interface UserState {
   isLoggedIn: boolean;
   loading: boolean;
   updateLoading: boolean;
+  codeLoading: boolean;
+  message: string;
   error: string | null;
 }
 
@@ -33,6 +38,8 @@ const initialState: UserState = {
   isLoggedIn: false,
   loading: false,
   updateLoading: false,
+  codeLoading: false,
+  message: '',
   error: null,
 };
 
@@ -46,11 +53,9 @@ export const updateUserPreferences = createAsyncThunk(
   'user/updateUserPreferences',
   async (preferences: UserPreferences, { rejectWithValue }) => {
     try {
-      const response = await api.patch(
-        `/preferences/me`,
-        preferences,
-        { withCredentials: true }
-      );
+      const response = await api.patch(`/preferences/me`, preferences, {
+        withCredentials: true,
+      });
       return response.data;
     } catch (err) {
       const error = err as AxiosError<ErrorResponse>;
@@ -83,11 +88,11 @@ export const updateProfile = createAsyncThunk<UserUpdateProfile, FormData>(
   async (data: FormData, { rejectWithValue }) => {
     try {
       const response = await api.patch('/users/me', data, {
-        headers: {'Content-Type': 'multipart/form-data'}
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
     } catch (err: unknown) {
-       // Narrow unknown error
+      // Narrow unknown error
       if (err instanceof Error) {
         return rejectWithValue(err.message);
       }
@@ -96,6 +101,37 @@ export const updateProfile = createAsyncThunk<UserUpdateProfile, FormData>(
   }
 );
 
+// ---------- Async thunk ----------
+export const sendVerificationCode = createAsyncThunk(
+  'profile/sendVerificationCode',
+  async (data: { email: string }, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/auth/resend-code', data);
+      return response.data;
+    } catch (err: unknown) {
+      // Narrow unknown error
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to update profile');
+    }
+  }
+);
+export const verifyEmail = createAsyncThunk(
+  'profile/verifyEmail',
+  async (data: { email: string; code: string }, { rejectWithValue }) => {
+    try {
+      const response = await api.post('/auth/verify-email', data);
+      return response.data;
+    } catch (err: unknown) {
+      // Narrow unknown error
+      if (err instanceof Error) {
+        return rejectWithValue(err.message);
+      }
+      return rejectWithValue('Failed to update profile');
+    }
+  }
+);
 // -------------------------
 // ✅ Slice
 // -------------------------
@@ -125,7 +161,7 @@ const userSlice = createSlice({
       })
       .addCase(updateUserPreferences.rejected, (state) => {
         state.loading = false;
-        state.preferences= null;
+        state.preferences = null;
       })
       .addCase(fetchUserPreferences.pending, (state) => {
         state.loading = true;
@@ -139,19 +175,41 @@ const userSlice = createSlice({
         state.loading = false;
         state.preferences = null;
       })
-       .addCase(updateProfile.pending, (state) => {
-        state.updateLoading = true,
-        state.error = null
+      .addCase(updateProfile.pending, (state) => {
+        (state.updateLoading = true), (state.error = null);
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
-        state.updateLoading = false,
-        state.userUpdateDetails=action.payload
-        state.error=null
+        (state.updateLoading = false),
+          (state.userUpdateDetails = action.payload);
+        state.error = null;
       })
       .addCase(updateProfile.rejected, (state) => {
-        state.updateLoading=false
-        state.userDetails=null
+        state.updateLoading = false;
+        state.userDetails = null;
       })
+      .addCase(sendVerificationCode.pending, (state) => {
+        state.codeLoading = true;
+      })
+      .addCase(sendVerificationCode.fulfilled, (state, action) => {
+        state.codeLoading = false;
+        state.message = action.payload.message;
+      })
+      .addCase(sendVerificationCode.rejected, (state, action) => {
+        state.codeLoading = false;
+        state.message = action.payload as string;
+      })
+      .addCase(verifyEmail.pending, (state) => {
+        state.codeLoading = true;
+      })
+      .addCase(verifyEmail.fulfilled, (state, action) => {
+        state.codeLoading = false;
+        state.message = action.payload.message;
+      })
+      .addCase(verifyEmail.rejected, (state, action) => {
+        state.codeLoading = false;
+        state.message= action.payload as string;
+      })
+      
   },
 });
 
