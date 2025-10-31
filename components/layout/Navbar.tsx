@@ -16,14 +16,26 @@ import { useAppDispatch } from '@/store/hooks';
 import { logoutUser } from '@/store/slices/authSlice';
 import { useRouter } from 'next/navigation';
 import { Loader } from 'lucide-react';
+import { clearChat } from '@/store/slices/chatSlice';
+import { useSocket } from '@/context/SocketContext';
 
-const Navbar = ({isAuthenticated, loading}:{isAuthenticated: boolean; loading: boolean;}) => {
+const Navbar = ({
+  isAuthenticated,
+  loading,
+}: {
+  isAuthenticated: boolean;
+  loading: boolean;
+}) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
+  const { socket } = useSocket();
   const handleLogout = () => {
     dispatch(logoutUser()).unwrap();
-    router.push('/login')
+    dispatch(clearChat());
+
+    if (socket) socket.disconnect();
+    router.push('/login');
   };
   return (
     <motion.nav
@@ -33,13 +45,15 @@ const Navbar = ({isAuthenticated, loading}:{isAuthenticated: boolean; loading: b
     >
       <MenuButton setOpen={setOpen} open={open} />
       <div className='flex gap-6 px-6'>
-        <NavLink text='Home' Icon={FiHome} href="/"/>
-        <NavLink text='Match' Icon={FiHeart} href="/match" />
-        <NavLink text='Chat' Icon={FiMessageCircle} href="/chat" />
-        {loading ? <Loader className="animate-spin"/> : isAuthenticated ? (
+        <NavLink text='Home' Icon={FiHome} href='/' />
+        <NavLink text='Match' Icon={FiHeart} href='/match' />
+        <NavLink text='Chat' Icon={FiMessageCircle} href='/chat' />
+        {loading ? (
+          <Loader className='animate-spin' />
+        ) : isAuthenticated ? (
           <NavLink text='Log out' Icon={FiLogOut} onClick={handleLogout} />
         ) : (
-          <NavLink text='Log in' Icon={FiLogIn} href="/login" />
+          <NavLink text='Log in' Icon={FiLogIn} href='/login' />
         )}
       </div>
       <Menu />
@@ -139,7 +153,7 @@ const Menu = () => {
       </div>
       <div className='flex flex-col gap-2 w-1/2'>
         <SectionTitle text='Profile' />
-        <MenuLink text='View Profile' href="/profile"/>
+        <MenuLink text='View Profile' href='/profile' />
       </div>
     </motion.div>
   );
@@ -156,11 +170,11 @@ const SectionTitle = ({ text }: { text: string }) => {
   );
 };
 
-const MenuLink = ({ text, href }: { text: string; href?: string; }) => {
+const MenuLink = ({ text, href }: { text: string; href?: string }) => {
   return (
     <motion.a
       variants={menuLinkVariants}
-      href={href? href: '#'}
+      href={href ? href : '#'}
       rel='nofollow'
       className='text-sm hover:text-indigo-500 transition-colors flex items-center gap-2'
     >

@@ -214,7 +214,7 @@ export function LimitedProfileCard({
                   className='h-14 w-1/2 rounded-none border-r border-zinc-200 bg-zinc-100 text-zinc-700 transition-all hover:bg-zinc-200 active:scale-[0.98] dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700'
                 >
                   <X className='mr-2 h-5 w-5' />
-                  Dislike
+                  Skip
                 </Button>
                 <Button
                   onClick={handleLike}

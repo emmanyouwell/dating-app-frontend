@@ -38,6 +38,7 @@ export const ChatProvider = ({ children, userId }: ChatProviderProps) => {
     );
 
     const handleIncomingMessage = (msg: ChatMessage) => {
+        console.log(msg);
       if (!msg?.message) return;
       if (msg.from === userId) return; // ignore echo from self
       dispatch(addMessage(msg));

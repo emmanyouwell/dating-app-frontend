@@ -50,7 +50,7 @@ export const logoutUser = createAsyncThunk(
   async () => {
     try {
       await api.post('/auth/logout');
-      return null;
+
     } catch (err) {
       handleAxiosError(err, 'Logout failed')
       
