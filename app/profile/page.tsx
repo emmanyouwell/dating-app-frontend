@@ -6,23 +6,16 @@ import { EditProfileForm } from '@/components/forms/EditProfileForm';
 import { VerifyEmail } from '@/components/forms/VerifyEmail';
 import Navbar from '@/components/layout/Navbar';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-import { Typography } from '@/components/ui/typography';
 import { useAuth } from '@/hooks/useAuth';
-import { useAppDispatch } from '@/store/hooks';
-import { sendVerificationCode } from '@/store/slices/userSlice';
-import { Edit, Mail } from 'lucide-react';
 
-const page = () => {
+const Page = () => {
   const { isAuthenticated, loading, user } = useAuth();
   const userDetails: UserProfile = {
     name: user?.name,
     isEmailVerified: user?.isEmailVerified,
     avatar: user?.avatar?.url,
     address: user?.address,
-    interests: user?.interests.map((i) => i._id),
+    interests: user?.interests?.map((i) => i._id),
     birthday: user?.birthday,
     shortBio: user?.shortBio,
     gender: user?.gender,
@@ -51,7 +44,4 @@ const page = () => {
   );
 };
 
-const Gradient = () => (
-  <div className='group-hover:opacity-100 opacity-0 absolute bottom-0 z-10 hidden h-24 w-full bg-linear-to-t from-neutral-600 to-neutral-500/0 md:block transition-opacity duration-500' />
-);
-export default page;
+export default Page;

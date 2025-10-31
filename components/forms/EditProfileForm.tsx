@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -9,17 +9,10 @@ import { toast } from 'sonner';
 import {
   Card,
   CardHeader,
-  CardTitle,
-  CardDescription,
   CardContent,
   CardFooter,
 } from '@/components/ui/card';
-import {
-  Field,
-  FieldLabel,
-  FieldError,
-  FieldGroup,
-} from '@/components/ui/field';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import {
   Command,
   CommandInput,
@@ -39,10 +32,10 @@ import {
   SelectValue,
 } from '../ui/select';
 import { ScrollArea } from '../ui/scroll-area';
-import { UserUpdateProfile } from '@/common/interfaces/user.interface';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { updateProfile } from '@/store/slices/userSlice';
-import { useAuth } from '@/hooks/useAuth';
+import { checkAuth } from '@/store/slices/authSlice';
+import { handleAxiosError } from '@/lib/handleAxiosError';
 
 // ---------- Zod Schema ----------
 const formSchema = z.object({
@@ -70,6 +63,8 @@ const formSchema = z.object({
 
 // ---------- Component ----------
 export const EditProfileForm = () => {
+  const [search, setSearch] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
   const DEBOUNCE_DELAY = 500;
   const dispatch = useAppDispatch();
   const { interests, geocodeResults, loading } = useAppSelector(
@@ -87,7 +82,7 @@ export const EditProfileForm = () => {
       shortBio: user?.shortBio || '',
       gender: user?.gender || 'other',
       avatar: undefined,
-      interests: user?.interests.map((i) => i._id) || [],
+      interests: user?.interests?.map((i) => i._id) || [],
       address: {
         street: user?.address?.street || '',
         brgy: user?.address?.brgy || '',
@@ -109,9 +104,12 @@ export const EditProfileForm = () => {
   }, [dispatch]);
 
   // Debounced geocode fetch
-  const street = form.watch('address.street');
-  const city = form.watch('address.city');
-  const brgy = form.watch('address.brgy');
+  const { control } = form;
+
+  const [street, city, brgy] = useWatch({
+    control,
+    name: ['address.street', 'address.city', 'address.brgy'],
+  });
   useEffect(() => {
     if (!street || !city || !brgy) return;
     const handler = setTimeout(
@@ -168,9 +166,9 @@ export const EditProfileForm = () => {
       // Send PATCH request
       await dispatch(updateProfile(formData)).unwrap();
       toast.success('Profile updated successfully!');
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err?.response?.data?.message || 'Failed to update profile');
+      dispatch(checkAuth());
+    } catch (err) {
+      handleAxiosError(err, 'Failed to update profile');
     }
   };
 
@@ -294,9 +292,15 @@ export const EditProfileForm = () => {
           />
 
           {/* Address */}
-          <h3 className='text-lg text-primary font-semibold col-span-1 md:col-span-2'>
-            Address
-          </h3>
+          <div>
+            <h3 className='text-lg text-primary font-semibold col-span-1 md:col-span-2'>
+              Address
+            </h3>
+            <span className='text-xs'>
+              (If you don&apos;t see your exact location, select the closest
+              location.)
+            </span>
+          </div>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
             <Controller
               name='address.street'
@@ -340,7 +344,7 @@ export const EditProfileForm = () => {
           {loading ? (
             <Loader className='animate-spin' />
           ) : (
-            geocodeResults.length > 0 && (
+            geocodeResults.length > 0 ? (
               <Controller
                 name='address.location'
                 control={form.control}
@@ -380,7 +384,7 @@ export const EditProfileForm = () => {
                   );
                 }}
               />
-            )
+            ) : <span className="text-sm text-destructive font-semibold">Address not found. Make sure the Street and City names are correct.</span>
           )}
 
           {/* Interests Multi-select */}
@@ -388,9 +392,6 @@ export const EditProfileForm = () => {
             name='interests'
             control={form.control}
             render={({ field, fieldState }) => {
-              const [search, setSearch] = useState('');
-              const [isOpen, setIsOpen] = useState(false);
-
               const filtered = search
                 ? interests.filter((i) => {
                     const name = i.name?.toLowerCase() || '';

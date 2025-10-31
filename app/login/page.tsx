@@ -3,10 +3,13 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loginUser } from '@/store/slices/authSlice';
+import { useAppDispatch } from '@/store/hooks';
+import { checkAuth, loginUser } from '@/store/slices/authSlice';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
@@ -18,7 +21,6 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  
   const route = useRouter();
   const dispatch = useAppDispatch();
   const { loading, error, user } = useAuth();
@@ -34,7 +36,10 @@ export default function LoginPage() {
   const onSubmit = (data: LoginFormData) => {
     dispatch(loginUser(data)).then((res) => {
       if (res.payload.success) {
-        route.push('/');
+        // Refresh auth state from server (httpOnly cookies)
+        dispatch(checkAuth());
+        // Redirect after auth is refreshed
+        route.replace('/');
       }
     });
   };
@@ -48,9 +53,10 @@ export default function LoginPage() {
         <h2 className='text-xl font-semibold mb-6 text-center'>Login</h2>
 
         <div className='mb-4'>
-          <label className='block text-gray-700'>Email</label>
-          <input
+          <Label className='block text-gray-700'>Email</Label>
+          <Input
             type='email'
+            placeholder='you@example.com'
             {...register('email')}
             className='mt-1 block w-full rounded border border-gray-300 p-2'
           />
@@ -60,9 +66,10 @@ export default function LoginPage() {
         </div>
 
         <div className='mb-4'>
-          <label className='block text-gray-700'>Password</label>
-          <input
+          <Label className='block text-gray-700'>Password</Label>
+          <Input
             type='password'
+            placeholder='••••••••'
             {...register('password')}
             className='mt-1 block w-full rounded border border-gray-300 p-2'
           />
@@ -80,18 +87,18 @@ export default function LoginPage() {
           </p>
         )}
 
-        <button
+        <Button
           type='submit'
-          disabled={loading}
+          disabled={!loading}
           className='w-full bg-primary hover:bg-primary/75 hover:text-secondary-foreground hover:cursor-pointer text-white py-2 rounded transition'
         >
-          {loading ? 'Logging in...' : 'Login'}
-        </button>
-        <p className="text-sm text-center mt-4 text-gray-600">
-          Don't have an account yet?{' '}
+          {!loading ? 'Logging in...' : 'Login'}
+        </Button>
+        <p className='text-sm text-center mt-4 text-gray-600'>
+          Don&apos;t have an account yet?{' '}
           <span
             onClick={() => route.push('/register')}
-            className="text-primary font-medium hover:underline cursor-pointer"
+            className='text-primary font-medium hover:underline cursor-pointer'
           >
             Register
           </span>

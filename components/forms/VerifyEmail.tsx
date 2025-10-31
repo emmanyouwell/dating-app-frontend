@@ -10,6 +10,7 @@ import {
   InputOTPSlot,
 } from '@/components/ui/input-otp';
 import { toast } from 'sonner';
+import { checkAuth } from '@/store/slices/authSlice';
 
 interface EmailVerificationCardProps {
   user?: { email?: string; isEmailVerified?: boolean };
@@ -18,7 +19,7 @@ interface EmailVerificationCardProps {
 export function VerifyEmail({ user }: EmailVerificationCardProps) {
   const dispatch = useAppDispatch();
   const isVerified = user?.isEmailVerified ?? false;
-  const { codeLoading, message } = useAppSelector((state) => state.user);
+  const { codeLoading } = useAppSelector((state) => state.user);
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
 
@@ -58,6 +59,7 @@ export function VerifyEmail({ user }: EmailVerificationCardProps) {
       toast.success('Email verified successfully');
       setOtpSent(false);
       setOtp('');
+      dispatch(checkAuth())
     } catch (err) {
       console.error(err);
       toast.error('Invalid or expired code');
@@ -85,7 +87,7 @@ export function VerifyEmail({ user }: EmailVerificationCardProps) {
 
             <div>
               <p className='font-medium text-sm text-slate-800 dark:text-slate-100'>
-                {isVerified ? 'Email verified' : 'Email not verified'}
+                {isVerified ? 'Email verified' : 'Email not verified'}: {user?.email}
               </p>
               <p className='text-xs text-slate-500 dark:text-slate-400'>
                 {isVerified

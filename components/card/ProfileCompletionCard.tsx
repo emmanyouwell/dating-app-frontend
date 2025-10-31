@@ -4,7 +4,6 @@ import { UserProfile } from '@/common/interfaces/user.interface';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { CheckCircle2, XCircle } from 'lucide-react';
-import { Typography } from '../ui/typography';
 
 interface ProfileCompletionCardProps {
   user: UserProfile;
@@ -14,22 +13,39 @@ export default function ProfileCompletionCard({
   user,
 }: ProfileCompletionCardProps) {
   const completionCriteria = [
-    { key: 'name', label: 'Name', isDone: !!user.name },
-    { key: 'gender', label: 'Gender', isDone: !!user.gender },
+    { key: 'name', label: 'Name', isDone: !!user.name, isRequired: true },
+    { key: 'gender', label: 'Gender', isDone: !!user.gender, isRequired: true },
     {
       key: 'isEmailVerified',
       label: 'Email Verified',
       isDone: !!user.isEmailVerified,
+      isRequired: true,
     },
-    { key: 'avatar', label: 'Avatar', isDone: !!user.avatar },
-    { key: 'address', label: 'Address', isDone: !!user.address },
+    { key: 'avatar', label: 'Avatar', isDone: !!user.avatar, isRequired: true },
+    {
+      key: 'address',
+      label: 'Address',
+      isDone: !!user.address,
+      isRequired: true,
+    },
     {
       key: 'interests',
       label: 'Interests',
       isDone: user.interests && user.interests.length > 0,
+      isRequired: false,
     },
-    { key: 'birthday', label: 'Birthday', isDone: !!user.birthday },
-    { key: 'shortBio', label: 'Short Bio', isDone: !!user.shortBio },
+    {
+      key: 'birthday',
+      label: 'Birthday',
+      isDone: !!user.birthday,
+      isRequired: false,
+    },
+    {
+      key: 'shortBio',
+      label: 'Short Bio',
+      isDone: !!user.shortBio,
+      isRequired: false,
+    },
   ];
 
   const completedCount = completionCriteria.filter(
@@ -79,6 +95,7 @@ export default function ProfileCompletionCard({
                   <XCircle className='text-red-500 w-4 h-4' />
                 )}
                 <span>{item.label}</span>
+                <span className='text-gray-400 text-xs'>{item.isRequired ? '(Required)': null }</span>
               </div>
               <span
                 className={`text-xs ${
@@ -102,7 +119,7 @@ export default function ProfileCompletionCard({
                   completionCriteria.length - completedCount === 1
                     ? 'item'
                     : 'items'
-                } to reach 100%.`}
+                } to reach 100% and get x1.2 multiplier on matchmaking!`}
           </p>
         </div>
       </CardContent>

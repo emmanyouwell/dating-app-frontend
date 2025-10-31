@@ -3,8 +3,8 @@ import {
   UserDetails,
   UserUpdateProfile,
 } from '@/common/interfaces/user.interface';
-import axios, { AxiosError } from 'axios';
 import api from '@/lib/api';
+import { handleAxiosError } from '@/lib/handleAxiosError';
 
 // -------------------------
 // ✅ Interfaces
@@ -22,6 +22,7 @@ export interface UserState {
   preferences: UserPreferences | null;
   isLoggedIn: boolean;
   loading: boolean;
+  updatePreferenceLoading: boolean;
   updateLoading: boolean;
   codeLoading: boolean;
   message: string;
@@ -37,31 +38,27 @@ const initialState: UserState = {
   preferences: null,
   isLoggedIn: false,
   loading: false,
+  updatePreferenceLoading: false,
   updateLoading: false,
   codeLoading: false,
   message: '',
   error: null,
 };
 
-interface ErrorResponse {
-  message: string;
-}
+
 // -------------------------
 // ✅ Async Thunks
 // -------------------------
 export const updateUserPreferences = createAsyncThunk(
   'user/updateUserPreferences',
-  async (preferences: UserPreferences, { rejectWithValue }) => {
+  async (preferences: UserPreferences) => {
     try {
       const response = await api.patch(`/preferences/me`, preferences, {
         withCredentials: true,
       });
       return response.data;
     } catch (err) {
-      const error = err as AxiosError<ErrorResponse>;
-      return rejectWithValue(
-        error.response?.data?.message || 'Auth check failed'
-      );
+      handleAxiosError(err, 'Preferences update failed')
     }
   }
 );
@@ -69,15 +66,12 @@ export const updateUserPreferences = createAsyncThunk(
 // ✅ Async thunk to fetch user preferences
 export const fetchUserPreferences = createAsyncThunk(
   'user/fetchUserPreferences',
-  async (_, { rejectWithValue }) => {
+  async () => {
     try {
       const response = await api.get('/preferences/me');
       return response.data;
     } catch (err) {
-      const error = err as AxiosError<ErrorResponse>;
-      return rejectWithValue(
-        error.response?.data?.message || 'Auth check failed'
-      );
+      handleAxiosError(err, 'Preferences not fetched');
     }
   }
 );
@@ -152,15 +146,15 @@ const userSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(updateUserPreferences.pending, (state) => {
-        state.loading = true;
+        state.updatePreferenceLoading = true;
         state.error = null;
       })
       .addCase(updateUserPreferences.fulfilled, (state, action) => {
-        state.loading = false;
+        state.updatePreferenceLoading = false;
         state.preferences = action.payload.data;
       })
       .addCase(updateUserPreferences.rejected, (state) => {
-        state.loading = false;
+        state.updatePreferenceLoading = false;
         state.preferences = null;
       })
       .addCase(fetchUserPreferences.pending, (state) => {
@@ -176,11 +170,12 @@ const userSlice = createSlice({
         state.preferences = null;
       })
       .addCase(updateProfile.pending, (state) => {
-        (state.updateLoading = true), (state.error = null);
+        state.updateLoading = true;
+        state.error = null;
       })
       .addCase(updateProfile.fulfilled, (state, action) => {
-        (state.updateLoading = false),
-          (state.userUpdateDetails = action.payload);
+        state.updateLoading = false;
+        state.userUpdateDetails = action.payload;
         state.error = null;
       })
       .addCase(updateProfile.rejected, (state) => {
@@ -207,9 +202,8 @@ const userSlice = createSlice({
       })
       .addCase(verifyEmail.rejected, (state, action) => {
         state.codeLoading = false;
-        state.message= action.payload as string;
-      })
-      
+        state.message = action.payload as string;
+      });
   },
 });
 

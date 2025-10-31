@@ -12,7 +12,7 @@ import {
   FiLogOut,
   FiLogIn,
 } from 'react-icons/fi';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { useAppDispatch } from '@/store/hooks';
 import { logoutUser } from '@/store/slices/authSlice';
 import { useRouter } from 'next/navigation';
 import { Loader } from 'lucide-react';
@@ -22,7 +22,8 @@ const Navbar = ({isAuthenticated, loading}:{isAuthenticated: boolean; loading: b
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const handleLogout = () => {
-    dispatch(logoutUser()).then(()=>router.replace('/login'));
+    dispatch(logoutUser()).unwrap();
+    router.push('/login')
   };
   return (
     <motion.nav
@@ -33,8 +34,8 @@ const Navbar = ({isAuthenticated, loading}:{isAuthenticated: boolean; loading: b
       <MenuButton setOpen={setOpen} open={open} />
       <div className='flex gap-6 px-6'>
         <NavLink text='Home' Icon={FiHome} href="/"/>
-        <NavLink text='Match' Icon={FiHeart} />
-        <NavLink text='Chat' Icon={FiMessageCircle} />
+        <NavLink text='Match' Icon={FiHeart} href="/match" />
+        <NavLink text='Chat' Icon={FiMessageCircle} href="/chat" />
         {loading ? <Loader className="animate-spin"/> : isAuthenticated ? (
           <NavLink text='Log out' Icon={FiLogOut} onClick={handleLogout} />
         ) : (

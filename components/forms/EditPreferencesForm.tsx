@@ -19,19 +19,11 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { toast } from 'sonner';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '../ui/card';
@@ -63,7 +55,11 @@ export type PreferencesFormValues = z.infer<typeof preferencesSchema>;
 // -------------------------
 export default function EditPreferencesForm() {
   const dispatch = useAppDispatch();
-  const { preferences, loading, error } = useAppSelector((state) => state.user);
+  const {
+    preferences,
+    updatePreferenceLoading: loading,
+    error,
+  } = useAppSelector((state) => state.user);
 
   // -------------------------
   // ✅ Form Setup
@@ -71,10 +67,10 @@ export default function EditPreferencesForm() {
   const form = useForm<PreferencesFormValues>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
-      minAge: preferences?.minAge ?? 18,
-      maxAge: preferences?.maxAge ?? 60,
-      maxDistance: preferences?.maxDistance ?? 10,
-      genderPreference: preferences?.genderPreference ?? ['female'],
+      minAge: preferences?.minAge,
+      maxAge: preferences?.maxAge,
+      maxDistance: preferences?.maxDistance,
+      genderPreference: preferences?.genderPreference,
     },
   });
   // Fetch interests
@@ -101,6 +97,7 @@ export default function EditPreferencesForm() {
     try {
       await dispatch(updateUserPreferences(values)).unwrap();
       toast.success('Preferences updated successfully');
+      dispatch(fetchUserPreferences());
     } catch (err) {
       console.error(err);
       toast.error('Failed to update preferences');
@@ -117,12 +114,9 @@ export default function EditPreferencesForm() {
         <CardDescription>Update your preferences</CardDescription>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="h-full">
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className='space-y-6'
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6 justify-between flex flex-col h-full'>
             {/* Min Age */}
             <FormField
               control={form.control}
@@ -194,7 +188,7 @@ export default function EditPreferencesForm() {
                 <FormItem>
                   <FormLabel>Gender Preferences</FormLabel>
                   <div className='flex flex-col gap-2 mt-2'>
-                    {(['male', 'female', 'other'] as const).map((gender) => (
+                    {(['male', 'female'] as const).map((gender) => (
                       <FormField
                         key={gender}
                         control={form.control}
@@ -230,22 +224,22 @@ export default function EditPreferencesForm() {
                 </FormItem>
               )}
             />
+            <div className='pt-2'>
+              <Button type='submit' className='w-full' disabled={loading}>
+                {loading ? 'Saving...' : 'Save Preferences'}
+              </Button>
+            </div>
+
+            {error && (
+              <p className='text-sm text-destructive mt-2'>
+                {typeof error === 'string'
+                  ? error
+                  : 'An unexpected error occurred'}
+              </p>
+            )}
           </form>
         </Form>
       </CardContent>
-      <CardFooter>
-        <div className='pt-2'>
-          <Button type='submit' className='w-full' disabled={loading}>
-            {loading ? 'Saving...' : 'Save Preferences'}
-          </Button>
-        </div>
-
-        {error && (
-          <p className='text-sm text-destructive mt-2'>
-            {typeof error === 'string' ? error : 'An unexpected error occurred'}
-          </p>
-        )}
-      </CardFooter>
     </Card>
   );
 }

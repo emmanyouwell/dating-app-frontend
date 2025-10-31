@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import api from '@/lib/api';
 import { UserDetails } from '@/common/interfaces/user.interface';
-import { AxiosError } from 'axios';
+import { handleAxiosError } from '@/lib/handleAxiosError';
 
 interface AuthState {
   user: UserDetails | null;
@@ -16,22 +16,17 @@ const initialState: AuthState = {
   loading: true,
   error: null,
 };
-interface ErrorResponse {
-  message: string;
-}
 // Async thunks
 export const loginUser = createAsyncThunk(
   'auth/login',
   async (
-    credentials: { email: string; password: string },
-    { rejectWithValue }
+    credentials: { email: string; password: string }
   ) => {
     try {
       const response = await api.post('/auth/login', credentials);
       return response.data;
     } catch (err) {
-      const error = err as AxiosError<ErrorResponse>;
-      return rejectWithValue(error.response?.data?.message || 'Login failed');
+      handleAxiosError(err, 'Login failed');
     }
   }
 );
@@ -40,44 +35,37 @@ export const registerUser = createAsyncThunk(
   'auth/register',
   async (
     userData: { email: string; password: string; name: string },
-    { rejectWithValue }
   ) => {
     try {
       const response = await api.post('/auth/register', userData);
       return response.data;
     } catch (err) {
-      const error = err as AxiosError<ErrorResponse>;
-      return rejectWithValue(
-        error.response?.data?.message || 'Registration failed'
-      );
+      handleAxiosError(err, 'Registration failed')
     }
   }
 );
 
 export const logoutUser = createAsyncThunk(
   'auth/logout',
-  async (_, { rejectWithValue }) => {
+  async () => {
     try {
       await api.post('/auth/logout');
       return null;
     } catch (err) {
-      const error = err as AxiosError<ErrorResponse>
-      return rejectWithValue(error.response?.data?.message || 'Logout failed');
+      handleAxiosError(err, 'Logout failed')
+      
     }
   }
 );
 
 export const checkAuth = createAsyncThunk(
   'auth/checkAuth',
-  async (_, { rejectWithValue }) => {
+  async () => {
     try {
       const response = await api.get('/users/me');
       return response.data;
     } catch (err) {
-      const error = err as AxiosError<ErrorResponse>
-      return rejectWithValue(
-        error.response?.data?.message || 'Auth check failed'
-      );
+     handleAxiosError(err, 'Auth check failed');
     }
   }
 );

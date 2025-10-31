@@ -3,11 +3,17 @@ import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "@/store/slices/userSlice";
 import authReducer from "@/store/slices/authSlice";
 import profileReducer from '@/store/slices/profileSlice';
+import matchReducer from '@/store/slices/matchSlice';
+import swipeReducer from '@/store/slices/swipeSlice';
+import chatReducer from '@/store/slices/chatSlice'
 export const store = configureStore({
   reducer: {
     user: userReducer,
     auth: authReducer,
     profile: profileReducer,
+    match: matchReducer,
+    swipe: swipeReducer,
+    chat: chatReducer
     // add more slices here
   },
 });

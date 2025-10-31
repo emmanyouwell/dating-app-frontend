@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 // ✅ Validation Schema
 const registerSchema = z.object({
@@ -37,7 +38,8 @@ export default function RegisterForm() {
     const result = await dispatch(registerUser(data));
 
     if (result.payload?.success) {
-      router.push('/');
+      router.push('/profile');
+      toast.success('Registered successfully! Complete your profile now!')
     }
   };
 
