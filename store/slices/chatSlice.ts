@@ -31,7 +31,7 @@ const initialState: ChatState = {
   error: null,
 };
 
-// ✅ Fetch messages for a specific room only
+
 export const fetchMessagesByRoom = createAsyncThunk<
   ChatMessage[],
   string, // roomName
@@ -53,8 +53,6 @@ const chatSlice = createSlice({
       const msg = action.payload;
       const roomName = msg.room;
       if (!roomName) return;
-
-      // If room doesn't exist, skip — creation happens only on backend
       if (!state.rooms[roomName]) return;
 
       state.rooms[roomName].messages.push(msg);
@@ -91,12 +89,8 @@ const chatSlice = createSlice({
         console.log(action.payload);
         const messages = action.payload;
         if (!messages.length) return;
-
-        // ✅ Get the room name from the first message
         const roomName = messages[0].room!;
         if (!roomName) return;
-
-        // ✅ Only update messages, never overwrite existing rooms
         state.rooms[roomName].messages = messages;
       })
       .addCase(fetchMessagesByRoom.rejected, (state, action) => {

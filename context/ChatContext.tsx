@@ -18,17 +18,17 @@ export const ChatProvider = ({ children, userId }: ChatProviderProps) => {
   useEffect(() => {
     if (!socket) return;
 
-    // 🔹 Fetch rooms immediately on connect
+    
     socket.emit('fetch-rooms');
 
-    // 🔹 Listen for initial rooms list
+    
     socket.on('rooms', (rooms: { userId: string; room: RoomDto }[]) => {
       rooms.forEach(({ userId, room }) => {
         dispatch(addRoom({ userId, room }));
       });
     });
 
-    // 🔹 Listen for chat unlocks
+    
     socket.on(
       'chat-unlocked',
       ({ users, room }: { users: string[]; room: RoomDto}) => {
