@@ -104,10 +104,10 @@ export default function RegisterForm() {
         {/* Submit Button */}
         <Button
           type="submit"
-          disabled={loading}
+          disabled={!loading}
           className="w-full bg-primary text-white hover:bg-primary/90"
         >
-          {loading ? 'Registering...' : 'Register'}
+          {!loading ? 'Registering...' : 'Register'}
         </Button>
 
         <p className="text-sm text-center mt-4 text-gray-600">
