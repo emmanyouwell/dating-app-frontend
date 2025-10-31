@@ -1,5 +1,5 @@
 'use client';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { IconType } from 'react-icons';
 import Link from 'next/link';
@@ -15,9 +15,10 @@ import {
 import { useAppDispatch } from '@/store/hooks';
 import { logoutUser } from '@/store/slices/authSlice';
 import { useRouter } from 'next/navigation';
-import { Loader } from 'lucide-react';
+import { Loader, Moon, Sun } from 'lucide-react';
 import { clearChat } from '@/store/slices/chatSlice';
 import { useSocket } from '@/context/SocketContext';
+import { useTheme } from 'next-themes';
 
 const Navbar = ({
   isAuthenticated,
@@ -30,6 +31,7 @@ const Navbar = ({
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
   const { socket } = useSocket();
+  const { theme, setTheme } = useTheme();
   const handleLogout = () => {
     dispatch(logoutUser()).unwrap();
     dispatch(clearChat());
@@ -140,6 +142,7 @@ const MenuButton = ({
 };
 
 const Menu = () => {
+  const { theme, setTheme } = useTheme();
   return (
     <motion.div
       variants={menuVariants}
@@ -148,7 +151,11 @@ const Menu = () => {
     >
       <div className='flex flex-col gap-2 w-1/2'>
         <SectionTitle text='Settings' />
-        <MenuLink text='Dark Mode' />
+        <MenuLink
+          text="Mode"
+          currentTheme={theme}
+          onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+        />
         <MenuLink text='Blocked Users' />
       </div>
       <div className='flex flex-col gap-2 w-1/2'>
@@ -170,15 +177,29 @@ const SectionTitle = ({ text }: { text: string }) => {
   );
 };
 
-const MenuLink = ({ text, href }: { text: string; href?: string }) => {
+const MenuLink = ({
+  currentTheme,
+  text,
+  href,
+  onClick,
+}: {
+  currentTheme?: string;
+  text: string;
+  href?: string;
+  onClick?: () => void;
+}) => {
+  const handleClick = () => {
+    onClick?.();
+  };
   return (
     <motion.a
       variants={menuLinkVariants}
       href={href ? href : '#'}
       rel='nofollow'
+      onClick={handleClick}
       className='text-sm hover:text-indigo-500 transition-colors flex items-center gap-2'
     >
-      {text}
+      {currentTheme && currentTheme === 'light' ? <Sun size={16}/> : currentTheme === 'dark' ? <Moon size={16}/> : ''}{' '}{text}
     </motion.a>
   );
 };

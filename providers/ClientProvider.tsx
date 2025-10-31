@@ -19,7 +19,6 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
       <ThemeProvider
         attribute='class'
         defaultTheme='light'
-        enableSystem
         disableTransitionOnChange
       >
         <AuthGate>{children}</AuthGate>

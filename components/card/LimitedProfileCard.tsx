@@ -77,7 +77,7 @@ export function LimitedProfileCard({
     dispatch(fetchLikedCandidates())
   };
   return (
-    <Card className='pb-0 justify-between relative w-full overflow-hidden border border-pink-200 bg-white shadow-sm transition-all hover:shadow-md dark:border-pink-900 dark:bg-zinc-900'>
+    <Card className='pb-0 justify-between relative w-full overflow-hidden border border-pink-200 bg-white shadow-sm transition-all hover:shadow-md dark:border-neutral-600 dark:bg-zinc-900'>
       {/* Overlay */}
       <div
         className={`
