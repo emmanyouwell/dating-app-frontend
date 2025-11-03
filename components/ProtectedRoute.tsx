@@ -5,6 +5,8 @@ import { useEffect, useRef } from 'react';
 import { Loader } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
+import { useAppDispatch } from '@/store/hooks';
+import { checkAuth } from '@/store/slices/authSlice';
 interface ProtectedRouteProps {
   children: React.ReactNode;
   profileCheck?: boolean;
@@ -14,6 +16,7 @@ export default function ProtectedRoute({
   children,
   profileCheck = false,
 }: ProtectedRouteProps) {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const { isAuthenticated, loading, user } = useAuth();
   const completionCriteria = [

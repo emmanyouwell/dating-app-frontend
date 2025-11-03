@@ -45,20 +45,19 @@ const initialState: UserState = {
   error: null,
 };
 
-
 // -------------------------
 // ✅ Async Thunks
 // -------------------------
 export const updateUserPreferences = createAsyncThunk(
   'user/updateUserPreferences',
-  async (preferences: UserPreferences) => {
+  async (preferences: UserPreferences, thunkAPI) => {
     try {
       const response = await api.patch(`/preferences/me`, preferences, {
         withCredentials: true,
       });
       return response.data;
     } catch (err) {
-      handleAxiosError(err, 'Preferences update failed')
+      return handleAxiosError(err, 'Preferences update failed', thunkAPI);
     }
   }
 );
@@ -66,12 +65,12 @@ export const updateUserPreferences = createAsyncThunk(
 // ✅ Async thunk to fetch user preferences
 export const fetchUserPreferences = createAsyncThunk(
   'user/fetchUserPreferences',
-  async () => {
+  async (_, thunkAPI) => {
     try {
       const response = await api.get('/preferences/me');
       return response.data;
     } catch (err) {
-      handleAxiosError(err, 'Preferences not fetched');
+      return handleAxiosError(err, 'Preferences not fetched', thunkAPI);
     }
   }
 );
@@ -79,18 +78,14 @@ export const fetchUserPreferences = createAsyncThunk(
 // ---------- Async thunk ----------
 export const updateProfile = createAsyncThunk<UserUpdateProfile, FormData>(
   'profile/updateProfile',
-  async (data: FormData, { rejectWithValue }) => {
+  async (data: FormData, thunkAPI) => {
     try {
       const response = await api.patch('/users/me', data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data;
-    } catch (err: unknown) {
-      // Narrow unknown error
-      if (err instanceof Error) {
-        return rejectWithValue(err.message);
-      }
-      return rejectWithValue('Failed to update profile');
+    } catch (err) {
+      return handleAxiosError(err, 'Profile update failed', thunkAPI);
     }
   }
 );
@@ -98,31 +93,28 @@ export const updateProfile = createAsyncThunk<UserUpdateProfile, FormData>(
 // ---------- Async thunk ----------
 export const sendVerificationCode = createAsyncThunk(
   'profile/sendVerificationCode',
-  async (data: { email: string }, { rejectWithValue }) => {
+  async (data: { email: string }, thunkAPI) => {
     try {
       const response = await api.post('/auth/resend-code', data);
       return response.data;
-    } catch (err: unknown) {
+    } catch (err) {
+      return handleAxiosError(
+        err,
+        'Failed to send verification code',
+        thunkAPI
+      );
       // Narrow unknown error
-      if (err instanceof Error) {
-        return rejectWithValue(err.message);
-      }
-      return rejectWithValue('Failed to update profile');
     }
   }
 );
 export const verifyEmail = createAsyncThunk(
   'profile/verifyEmail',
-  async (data: { email: string; code: string }, { rejectWithValue }) => {
+  async (data: { email: string; code: string }, thunkAPI) => {
     try {
       const response = await api.post('/auth/verify-email', data);
       return response.data;
-    } catch (err: unknown) {
-      // Narrow unknown error
-      if (err instanceof Error) {
-        return rejectWithValue(err.message);
-      }
-      return rejectWithValue('Failed to update profile');
+    } catch (err) {
+      return handleAxiosError(err, 'Email verification failed', thunkAPI);
     }
   }
 );

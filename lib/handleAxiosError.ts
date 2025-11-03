@@ -1,4 +1,5 @@
 // src/lib/handleAxiosError.ts
+import { AsyncThunkConfig, GetThunkAPI } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import { toast } from 'sonner'; // or 'react-hot-toast' if you use that
 
@@ -9,17 +10,18 @@ import { toast } from 'sonner'; // or 'react-hot-toast' if you use that
  */
 export function handleAxiosError(
   error: unknown,
-  fallbackMessage = 'Something went wrong'
-): void {
+  fallbackMessage = 'Something went wrong',
+  thunk?: GetThunkAPI<AsyncThunkConfig>
+) {
   if (error instanceof AxiosError) {
     const message = error.response?.data?.message ?? fallbackMessage;
     console.error('[AxiosError]', message, error);
-    toast.error(message);
+     return thunk?.rejectWithValue(message);
   } else if (error instanceof Error) {
     console.error('[Error]', error.message);
-    toast.error(error.message || fallbackMessage);
+    return thunk?.rejectWithValue(error.message);
   } else {
     console.error('[Unknown Error]', error);
-    toast.error(fallbackMessage);
+    return thunk?.rejectWithValue(error);
   }
 }

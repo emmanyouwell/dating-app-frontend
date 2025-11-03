@@ -36,12 +36,12 @@ export const fetchMessagesByRoom = createAsyncThunk<
   ChatMessage[],
   string, // roomName
   { rejectValue: string }
->('chat/fetchMessagesByRoom', async (roomName) => {
+>('chat/fetchMessagesByRoom', async (roomName, thunkAPI) => {
   try {
     const res = await api.get(`/chat/messages/${roomName}`);
     return res.data; // ChatMessage[]
   } catch (err) {
-    handleAxiosError(err, 'Messages not fetched');
+    return handleAxiosError(err, 'Messages not fetched', thunkAPI);
   }
 });
 

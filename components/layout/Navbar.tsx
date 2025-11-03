@@ -50,9 +50,7 @@ const Navbar = ({
         <NavLink text='Home' Icon={FiHome} href='/' />
         <NavLink text='Match' Icon={FiHeart} href='/match' />
         <NavLink text='Chat' Icon={FiMessageCircle} href='/chat' />
-        {loading ? (
-          <Loader className='animate-spin' />
-        ) : isAuthenticated ? (
+        {isAuthenticated ? (
           <NavLink text='Log out' Icon={FiLogOut} onClick={handleLogout} />
         ) : (
           <NavLink text='Log in' Icon={FiLogIn} href='/login' />

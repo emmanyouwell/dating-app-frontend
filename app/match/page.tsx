@@ -14,14 +14,17 @@ import {
   swipeRight,
   unmatch,
 } from '@/store/slices/swipeSlice';
-import {  Loader, Search } from 'lucide-react';
+import { Loader, Search } from 'lucide-react';
 import React, { useEffect } from 'react';
 
 const Page = () => {
   const { isAuthenticated, loading } = useAuth();
-  const { liked, loading: fetchLiked, swipeLoadingIds, unmatchLoadingIds } = useAppSelector(
-    (state) => state.swipe
-  );
+  const {
+    liked,
+    loading: fetchLiked,
+    swipeLoadingIds,
+    unmatchLoadingIds,
+  } = useAppSelector((state) => state.swipe);
   const { candidates, loading: matchLoading } = useAppSelector(
     (state) => state.match
   );
@@ -30,14 +33,20 @@ const Page = () => {
     dispatch(fetchCandidates());
     dispatch(fetchLikedCandidates());
   }, [dispatch]);
-  const onLike = (id: string) => {
-    dispatch(swipeRight(id));
+  const onLike = async (id: string) => {
+    await dispatch(swipeRight(id));
+    await dispatch(fetchCandidates());
+    await dispatch(fetchLikedCandidates());
   };
-  const onUnmatch = (id: string) => {
-    dispatch(unmatch(id));
+  const onUnmatch = async (id: string) => {
+    await dispatch(unmatch(id));
+    await dispatch(fetchLikedCandidates());
+    await dispatch(fetchCandidates());
   };
-  const onDislike = (id: string) => {
-    dispatch(swipeLeft(id));
+  const onDislike = async (id: string) => {
+    await dispatch(swipeLeft(id));
+    await dispatch(fetchCandidates());
+    await dispatch(fetchLikedCandidates());
   };
   return (
     <ProtectedRoute profileCheck>

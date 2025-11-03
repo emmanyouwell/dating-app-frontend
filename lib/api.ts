@@ -1,3 +1,4 @@
+
 import axios, {
   AxiosInstance,
   InternalAxiosRequestConfig,
@@ -66,7 +67,6 @@ api.interceptors.response.use(
       // Token expired or invalid, redirect to login
       if (typeof window !== 'undefined') {
         console.log('🔐 Authentication failed');
-        // window.location.href = '/login';
       }
     }
 

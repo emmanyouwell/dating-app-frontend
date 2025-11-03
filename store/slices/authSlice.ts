@@ -19,53 +19,44 @@ const initialState: AuthState = {
 // Async thunks
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async (
-    credentials: { email: string; password: string }
-  ) => {
+  async (credentials: { email: string; password: string }, thunkAPI) => {
     try {
       const response = await api.post('/auth/login', credentials);
       return response.data;
     } catch (err) {
-      handleAxiosError(err, 'Login failed');
+      return handleAxiosError(err, 'Login failed', thunkAPI);
     }
   }
 );
 
 export const registerUser = createAsyncThunk(
   'auth/register',
-  async (
-    userData: { email: string; password: string; name: string },
-  ) => {
+  async (userData: { email: string; password: string; name: string }, thunkAPI) => {
     try {
       const response = await api.post('/auth/register', userData);
       return response.data;
     } catch (err) {
-      handleAxiosError(err, 'Registration failed')
+      return handleAxiosError(err, 'Registration failed', thunkAPI);
     }
   }
 );
 
-export const logoutUser = createAsyncThunk(
-  'auth/logout',
-  async () => {
-    try {
-      await api.post('/auth/logout');
-
-    } catch (err) {
-      handleAxiosError(err, 'Logout failed')
-      
-    }
+export const logoutUser = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
+  try {
+    await api.post('/auth/logout');
+  } catch (err) {
+    return handleAxiosError(err, 'Logout failed', thunkAPI);
   }
-);
+});
 
 export const checkAuth = createAsyncThunk(
   'auth/checkAuth',
-  async () => {
+  async (_, thunkAPI) => {
     try {
       const response = await api.get('/users/me');
       return response.data;
     } catch (err) {
-     handleAxiosError(err, 'Auth check failed');
+      return handleAxiosError(err, 'Auth check failed', thunkAPI);
     }
   }
 );
@@ -130,7 +121,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
       })
       .addCase(checkAuth.rejected, (state) => {
-        state.loading = false;
+        state.loading = true;
         state.isAuthenticated = false;
         state.user = null;
       });

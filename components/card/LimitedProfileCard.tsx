@@ -55,26 +55,20 @@ export function LimitedProfileCard({
 }: LimitedProfileCardProps) {
   const [liked, setLiked] = useState(false);
   const compatibility = Math.floor(score * 100);
-    const dispatch = useAppDispatch();
-  const handleLike = () => {
+  const dispatch = useAppDispatch();
+  const handleLike = async () => {
     setLiked(true);
     onLike?.(id);
     // auto-hide overlay after 1.5s
-    setTimeout(() => {
+    setTimeout(async () => {
       setLiked(false);
     }, 1500);
-    dispatch(fetchCandidates())
-    dispatch(fetchLikedCandidates())
   };
-  const handleUnmatch = () => {
+  const handleUnmatch = async () => {
     onUnmatch?.(id);
-    dispatch(fetchCandidates())
-    dispatch(fetchLikedCandidates())
   };
-  const handleDislike = () => {
+  const handleDislike = async () => {
     onDislike?.(id);
-   dispatch(fetchCandidates())
-    dispatch(fetchLikedCandidates())
   };
   return (
     <Card className='pb-0 justify-between relative w-full overflow-hidden border border-pink-200 bg-white shadow-sm transition-all hover:shadow-md dark:border-neutral-600 dark:bg-zinc-900'>
