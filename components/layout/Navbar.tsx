@@ -151,7 +151,7 @@ const Menu = () => {
         <SectionTitle text='Settings' />
         <MenuLink
           text="Mode"
-          currentTheme={theme}
+          currentTheme={theme ?? 'light'}
           onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
         />
         <MenuLink text='Blocked Users' />
