@@ -5,20 +5,25 @@ import { useEffect, useRef } from 'react';
 import { Loader } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
-import { useAppDispatch } from '@/store/hooks';
-import { checkAuth } from '@/store/slices/authSlice';
+
 interface ProtectedRouteProps {
   children: React.ReactNode;
   profileCheck?: boolean;
 }
 
+/**
+ * ProtectedRoute component that ensures user is authenticated
+ * and optionally checks if profile is complete
+ * 
+ * Uses AuthContext for session state - no Redux needed
+ */
 export default function ProtectedRoute({
   children,
   profileCheck = false,
 }: ProtectedRouteProps) {
-  const dispatch = useAppDispatch();
   const router = useRouter();
   const { isAuthenticated, loading, user } = useAuth();
+  
   const completionCriteria = [
     { key: 'name', label: 'Name', isDone: !!user?.name },
     { key: 'gender', label: 'Gender', isDone: !!user?.gender },
@@ -37,6 +42,7 @@ export default function ProtectedRoute({
     (completedCount / completionCriteria.length) * 100
   );
   const isCompleted = progress === 100;
+  
   // Track whether we've already shown a toast to avoid duplicates
   const toastShown = useRef(false);
 

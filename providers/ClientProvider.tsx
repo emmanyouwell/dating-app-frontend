@@ -1,16 +1,14 @@
 'use client';
 
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { Provider as ReduxProvider } from 'react-redux';
 
-import { checkAuth } from '@/store/slices/authSlice';
 import { store } from '@/store/store';
 import { SocketIOProvider } from './SocketIOProvider';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { ChatProvider } from '@/context/ChatContext';
-import { useAuth } from '@/hooks/useAuth';
-import { useAppDispatch } from '@/store/hooks';
+import { AuthProvider, useAuth } from '@/context/AuthContext';
 
 export default function ClientProviders({ children }: { children: ReactNode }) {
   return (
@@ -21,21 +19,22 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
         defaultTheme='light'
         disableTransitionOnChange
       >
-        <AuthGate>{children}</AuthGate>
+        <AuthProvider>
+          <AuthGate>{children}</AuthGate>
+        </AuthProvider>
       </ThemeProvider>
     </ReduxProvider>
   );
 }
 
-// Separate component to safely use useAuth after ReduxProvider is mounted
+/**
+ * Separate component to conditionally render SocketIO and Chat providers
+ * based on authentication state. AuthContext handles session verification automatically.
+ */
 function AuthGate({ children }: { children: ReactNode }) {
-  const dispatch = useAppDispatch();
   const { user } = useAuth();
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, [dispatch]);
-  
 
+  // Only provide SocketIO and Chat when user is authenticated
   if (!user) {
     return <>{children}</>;
   }

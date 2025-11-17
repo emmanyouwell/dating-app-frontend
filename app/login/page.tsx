@@ -3,8 +3,8 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppDispatch } from '@/store/hooks';
-import { checkAuth, loginUser } from '@/store/slices/authSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { loginUser } from '@/store/slices/authSlice';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Input } from '@/components/ui/input';
@@ -21,9 +21,10 @@ const loginSchema = z.object({
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const route = useRouter();
+  const router = useRouter();
   const dispatch = useAppDispatch();
-  const { loading, error, user } = useAuth();
+  const { refreshUser } = useAuth();
+  const { loginLoading, loginError } = useAppSelector((state) => state.auth);
 
   const {
     register,
@@ -33,15 +34,16 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    dispatch(loginUser(data)).then((res) => {
-      if (res.payload.success) {
-        // Refresh auth state from server (httpOnly cookies)
-        dispatch(checkAuth());
-        // Redirect after auth is refreshed
-        route.replace('/');
-      }
-    });
+  const onSubmit = async (data: LoginFormData) => {
+    const result = await dispatch(loginUser(data));
+    
+    if (result.type === 'auth/login/fulfilled' && result.payload?.success) {
+      // Refresh auth state from server (httpOnly cookies)
+      // This will update the Context with the new user session
+      await refreshUser();
+      // Redirect after auth is refreshed
+      router.replace('/');
+    }
   };
 
   return (
@@ -80,24 +82,19 @@ export default function LoginPage() {
           )}
         </div>
 
-        {error && <p className='text-red-600 text-center mb-4'>{error}</p>}
-        {user && (
-          <p className='text-green-600 text-center mb-4'>
-            Welcome, {user.email}!
-          </p>
-        )}
+        {loginError && <p className='text-red-600 text-center mb-4'>{loginError}</p>}
 
         <Button
           type='submit'
-          disabled={!loading}
+          disabled={loginLoading}
           className='w-full bg-primary hover:bg-primary/75 hover:text-secondary-foreground hover:cursor-pointer text-white py-2 rounded transition'
         >
-          {!loading ? 'Logging in...' : 'Login'}
+          {loginLoading ? 'Logging in...' : 'Login'}
         </Button>
         <p className='text-sm text-center mt-4 text-gray-600'>
           Don&apos;t have an account yet?{' '}
           <span
-            onClick={() => route.push('/register')}
+            onClick={() => router.push('/register')}
             className='text-primary font-medium hover:underline cursor-pointer'
           >
             Register

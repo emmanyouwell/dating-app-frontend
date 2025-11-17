@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useAppDispatch } from '@/store/hooks';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { registerUser } from '@/store/slices/authSlice';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
@@ -24,7 +24,8 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function RegisterForm() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { loading, error } = useAuth();
+  const { refreshUser } = useAuth();
+  const { registerLoading, registerError } = useAppSelector((state) => state.auth);
 
   const {
     register,
@@ -37,9 +38,12 @@ export default function RegisterForm() {
   const onSubmit = async (data: RegisterFormData) => {
     const result = await dispatch(registerUser(data));
 
-    if (result.payload?.success) {
+    if (result.type === 'auth/register/fulfilled' && result.payload?.success) {
+      // Refresh auth state from server (httpOnly cookies)
+      // This will update the Context with the new user session
+      await refreshUser();
       router.push('/profile');
-      toast.success('Registered successfully! Complete your profile now!')
+      toast.success('Registered successfully! Complete your profile now!');
     }
   };
 
@@ -99,15 +103,15 @@ export default function RegisterForm() {
         </div>
 
         {/* Error Message */}
-        {error && <p className="text-red-600 text-center mb-4">{error}</p>}
+        {registerError && <p className="text-red-600 text-center mb-4">{registerError}</p>}
 
         {/* Submit Button */}
         <Button
           type="submit"
-          disabled={!loading}
+          disabled={registerLoading}
           className="w-full bg-primary text-white hover:bg-primary/90"
         >
-          {!loading ? 'Registering...' : 'Register'}
+          {registerLoading ? 'Registering...' : 'Register'}
         </Button>
 
         <p className="text-sm text-center mt-4 text-gray-600">

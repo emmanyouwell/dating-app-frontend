@@ -19,6 +19,7 @@ import { Loader, Moon, Sun } from 'lucide-react';
 import { clearChat } from '@/store/slices/chatSlice';
 import { useSocket } from '@/context/SocketContext';
 import { useTheme } from 'next-themes';
+import { useAuth } from '@/hooks/useAuth';
 
 const Navbar = ({
   isAuthenticated,
@@ -29,14 +30,21 @@ const Navbar = ({
 }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const { logout: logoutContext } = useAuth();
   const [open, setOpen] = useState(false);
   const { socket } = useSocket();
   const { theme, setTheme } = useTheme();
-  const handleLogout = () => {
-    dispatch(logoutUser()).unwrap();
+  
+  const handleLogout = async () => {
+    // Call logout API via Redux (clears cookie on backend)
+    await dispatch(logoutUser());
+    // Clear chat state
     dispatch(clearChat());
-
+    // Clear session state in Context
+    await logoutContext();
+    // Disconnect socket
     if (socket) socket.disconnect();
+    // Redirect to login
     router.push('/login');
   };
   return (

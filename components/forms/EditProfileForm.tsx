@@ -34,7 +34,7 @@ import {
 import { ScrollArea } from '../ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { updateProfile } from '@/store/slices/userSlice';
-import { checkAuth } from '@/store/slices/authSlice';
+import { useAuth } from '@/hooks/useAuth';
 import { handleAxiosError } from '@/lib/handleAxiosError';
 
 // ---------- Zod Schema ----------
@@ -70,7 +70,7 @@ export const EditProfileForm = () => {
   const { interests, geocodeResults, loading } = useAppSelector(
     (state) => state.profile
   );
-  const user = useAppSelector((state) => state.auth.user);
+  const { user, refreshUser } = useAuth();
   const { updateLoading } = useAppSelector((state) => state.user);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -166,7 +166,8 @@ export const EditProfileForm = () => {
       // Send PATCH request
       await dispatch(updateProfile(formData)).unwrap();
       toast.success('Profile updated successfully!');
-      dispatch(checkAuth());
+      // Refresh user session to get updated profile data
+      await refreshUser();
     } catch (err) {
       handleAxiosError(err, 'Failed to update profile');
     }
