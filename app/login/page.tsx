@@ -10,6 +10,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Mail, Lock, Loader2, AlertCircle } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
@@ -47,60 +56,107 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gray-100'>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className='bg-white shadow-md rounded-lg p-8 w-full max-w-sm'
-      >
-        <h2 className='text-xl font-semibold mb-6 text-center'>Login</h2>
+    <div className='flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4'>
+      <Card className='w-full max-w-md shadow-lg border-2'>
+        <CardHeader className='space-y-1 text-center'>
+          <CardTitle className='text-3xl font-bold tracking-tight'>
+            Welcome Back
+          </CardTitle>
+          <CardDescription className='text-base'>
+            Sign in to your account to continue
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+            {/* Email Field */}
+            <div className='space-y-2'>
+              <Label htmlFor='email' className='text-sm font-medium'>
+                Email Address
+              </Label>
+              <div className='relative'>
+                <Mail className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                <Input
+                  id='email'
+                  type='email'
+                  placeholder='you@example.com'
+                  {...register('email')}
+                  className='pl-10'
+                  aria-invalid={errors.email ? 'true' : 'false'}
+                />
+              </div>
+              {errors.email && (
+                <p className='text-sm text-destructive flex items-center gap-1'>
+                  <AlertCircle className='h-3 w-3' />
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-        <div className='mb-4'>
-          <Label className='block text-gray-700'>Email</Label>
-          <Input
-            type='email'
-            placeholder='you@example.com'
-            {...register('email')}
-            className='mt-1 block w-full rounded border border-gray-300 p-2'
-          />
-          {errors.email && (
-            <p className='text-red-500 text-sm mt-1'>{errors.email.message}</p>
-          )}
-        </div>
+            {/* Password Field */}
+            <div className='space-y-2'>
+              <Label htmlFor='password' className='text-sm font-medium'>
+                Password
+              </Label>
+              <div className='relative'>
+                <Lock className='absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground' />
+                <Input
+                  id='password'
+                  type='password'
+                  placeholder='Enter your password'
+                  {...register('password')}
+                  className='pl-10'
+                  aria-invalid={errors.password ? 'true' : 'false'}
+                />
+              </div>
+              {errors.password && (
+                <p className='text-sm text-destructive flex items-center gap-1'>
+                  <AlertCircle className='h-3 w-3' />
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
 
-        <div className='mb-4'>
-          <Label className='block text-gray-700'>Password</Label>
-          <Input
-            type='password'
-            placeholder='••••••••'
-            {...register('password')}
-            className='mt-1 block w-full rounded border border-gray-300 p-2'
-          />
-          {errors.password && (
-            <p className='text-red-500 text-sm mt-1'>
-              {errors.password.message}
-            </p>
-          )}
-        </div>
+            {/* Error Message */}
+            {loginError && (
+              <div className='rounded-md bg-destructive/10 border border-destructive/20 p-3'>
+                <p className='text-sm text-destructive flex items-center gap-2'>
+                  <AlertCircle className='h-4 w-4' />
+                  {loginError}
+                </p>
+              </div>
+            )}
 
-        {loginError && <p className='text-red-600 text-center mb-4'>{loginError}</p>}
-
-        <Button
-          type='submit'
-          disabled={loginLoading}
-          className='w-full bg-primary hover:bg-primary/75 hover:text-secondary-foreground hover:cursor-pointer text-white py-2 rounded transition'
-        >
-          {loginLoading ? 'Logging in...' : 'Login'}
-        </Button>
-        <p className='text-sm text-center mt-4 text-gray-600'>
-          Don&apos;t have an account yet?{' '}
-          <span
-            onClick={() => router.push('/register')}
-            className='text-primary font-medium hover:underline cursor-pointer'
-          >
-            Register
-          </span>
-        </p>
-      </form>
+            {/* Submit Button */}
+            <Button
+              type='submit'
+              disabled={loginLoading}
+              className='w-full'
+              size='lg'
+            >
+              {loginLoading ? (
+                <>
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  Logging in...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className='flex flex-col space-y-4'>
+          <div className='text-sm text-center text-muted-foreground'>
+            Don&apos;t have an account?{' '}
+            <button
+              type='button'
+              onClick={() => router.push('/register')}
+              className='text-primary font-medium hover:underline transition-colors'
+            >
+              Create an account
+            </button>
+          </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 }

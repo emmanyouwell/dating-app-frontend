@@ -10,6 +10,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { User, Mail, Lock, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 // ✅ Validation Schema
@@ -48,82 +57,131 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-white shadow-lg rounded-xl p-8 w-full max-w-sm border border-gray-200"
-      >
-        <h2 className="text-2xl font-semibold mb-6 text-center text-gray-800">
-          Create an Account
-        </h2>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4">
+      <Card className="w-full max-w-md shadow-lg border-2">
+        <CardHeader className="space-y-1 text-center">
+          <CardTitle className="text-3xl font-bold tracking-tight">
+            Create an Account
+          </CardTitle>
+          <CardDescription className="text-base">
+            Sign up to get started on your journey
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Name Field */}
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium">
+                Full Name
+              </Label>
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="name"
+                  type="text"
+                  {...register('name')}
+                  placeholder="John Doe"
+                  className="pl-10"
+                  aria-invalid={errors.name ? 'true' : 'false'}
+                />
+              </div>
+              {errors.name && (
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.name.message}
+                </p>
+              )}
+            </div>
 
-        {/* Name */}
-        <div className="mb-4">
-          <Label htmlFor="name">Name</Label>
-          <Input
-            id="name"
-            type="text"
-            {...register('name')}
-            placeholder="John Doe"
-            className="mt-1"
-          />
-          {errors.name && (
-            <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
-          )}
-        </div>
+            {/* Email Field */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                Email Address
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  {...register('email')}
+                  placeholder="you@example.com"
+                  className="pl-10"
+                  aria-invalid={errors.email ? 'true' : 'false'}
+                />
+              </div>
+              {errors.email && (
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.email.message}
+                </p>
+              )}
+            </div>
 
-        {/* Email */}
-        <div className="mb-4">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            {...register('email')}
-            placeholder="you@example.com"
-            className="mt-1"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
-          )}
-        </div>
+            {/* Password Field */}
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium">
+                Password
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="password"
+                  type="password"
+                  {...register('password')}
+                  placeholder="Create a strong password"
+                  className="pl-10"
+                  aria-invalid={errors.password ? 'true' : 'false'}
+                />
+              </div>
+              {errors.password && (
+                <p className="text-sm text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.password.message}
+                </p>
+              )}
+            </div>
 
-        {/* Password */}
-        <div className="mb-6">
-          <Label htmlFor="password">Password</Label>
-          <Input
-            id="password"
-            type="password"
-            {...register('password')}
-            placeholder="••••••••"
-            className="mt-1"
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-          )}
-        </div>
+            {/* Error Message */}
+            {registerError && (
+              <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3">
+                <p className="text-sm text-destructive flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4" />
+                  {registerError}
+                </p>
+              </div>
+            )}
 
-        {/* Error Message */}
-        {registerError && <p className="text-red-600 text-center mb-4">{registerError}</p>}
-
-        {/* Submit Button */}
-        <Button
-          type="submit"
-          disabled={registerLoading}
-          className="w-full bg-primary text-white hover:bg-primary/90"
-        >
-          {registerLoading ? 'Registering...' : 'Register'}
-        </Button>
-
-        <p className="text-sm text-center mt-4 text-gray-600">
-          Already have an account?{' '}
-          <span
-            onClick={() => router.push('/login')}
-            className="text-primary font-medium hover:underline cursor-pointer"
-          >
-            Login
-          </span>
-        </p>
-      </form>
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              disabled={registerLoading}
+              className="w-full"
+              size="lg"
+            >
+              {registerLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                'Create Account'
+              )}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-4">
+          <div className="text-sm text-center text-muted-foreground">
+            Already have an account?{' '}
+            <button
+              type="button"
+              onClick={() => router.push('/login')}
+              className="text-primary font-medium hover:underline transition-colors"
+            >
+              Sign in
+            </button>
+          </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
