@@ -186,9 +186,8 @@ const ChatContent = () => (
         alive.
       </p>
       <p className='mb-8 text-xl text-neutral-600 dark:text-neutral-300 md:text-2xl'>
-        Mutual matches unlock real-time chats so you can start conversations
-        instantly. Connect with people who genuinely like you and keep the spark
-        alive.
+        You can remove chat access anytime by unmatching a user. Stay in control
+        of your conversations and your connections.
       </p>
       <button className='w-full rounded bg-neutral-900 dark:bg-neutral-100 px-9 py-4 text-xl text-white dark:text-neutral-900 transition-colors hover:bg-neutral-700 dark:hover:bg-neutral-200 md:w-fit'>
         <Link href='/profile'>
