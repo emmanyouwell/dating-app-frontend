@@ -24,19 +24,22 @@ const Page = () => {
     <ProtectedRoute>
       <Navbar isAuthenticated={isAuthenticated} loading={loading} />
       <div className='flex min-h-screen items-center justify-center bg-background font-sans dark:bg-background'>
-        <main className='flex flex-col lg:flex-row min-h-screen w-full max-w-7xl justify-center bg-background dark:bg-background sm:items-start p-4 gap-4'>
-          <EditProfileForm />
-          <div className='w-full flex flex-col gap-4'>
-            <div className='w-full flex flex-col md:flex-row items-stretch gap-4'>
-              <EditPreferencesForm />
-              <ProfileCompletionCard user={userDetails} />
-            </div>
+        <main className='flex flex-col lg:flex-row min-h-screen w-full max-w-7xl justify-center bg-background dark:bg-background sm:items-start p-4 gap-4 relative'>
+          <div className='flex flex-col gap-4 w-full'>
+            <EditProfileForm />
+            <EditPreferencesForm />
             <VerifyEmail
               user={{
                 email: user?.email,
                 isEmailVerified: user?.isEmailVerified,
               }}
             />
+          </div>
+          <div className='w-max sticky top-2.5 flex flex-col gap-4'>
+            <div className='flex flex-col md:flex-row items-stretch gap-4'>
+              <ProfileCompletionCard user={userDetails} />
+            </div>
+            
           </div>
         </main>
       </div>

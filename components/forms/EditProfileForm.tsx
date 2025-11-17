@@ -174,7 +174,7 @@ export const EditProfileForm = () => {
   };
 
   return (
-    <Card className='w-full lg:max-w-xl bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
+    <Card className='w-full bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
       <CardHeader>
         <div className='rounded-lg rounded-br-none rounded-bl-none animate-fade-down bg-primary dark:bg-primary h-[150px] w-full relative cover-photo'>
           <div className='flex justify-center w-full absolute -top-5'>
@@ -370,7 +370,7 @@ export const EditProfileForm = () => {
                             lat: parseFloat(selected.lat),
                           });
                         }}
-                        className='border rounded p-2 w-full text-black'
+                        className='border rounded p-2 w-full text-black dark:text-white'
                       >
                         <option value='' disabled>
                           Select a location...

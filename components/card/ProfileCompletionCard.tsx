@@ -57,7 +57,7 @@ export default function ProfileCompletionCard({
   const multiplier = 1.2; // Matching score multiplier when complete
   const isComplete = progress === 100;
   return (
-    <Card className='w-full bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
+    <Card className='w-sm bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
       <CardContent className='space-y-4'>
         {/* Header */}
         <div className='flex items-center justify-between'>

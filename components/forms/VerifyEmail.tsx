@@ -72,7 +72,7 @@ export function VerifyEmail({ user }: EmailVerificationCardProps) {
   // ✅ Render
   // -------------------------
   return (
-    <Card className='border-none shadow-md bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
+    <Card className='w-full border-none shadow-md bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
       <CardContent className='p-6 flex flex-col gap-4'>
         {/* Header Row */}
         <div className='flex items-center justify-between'>

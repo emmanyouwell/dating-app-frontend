@@ -114,71 +114,76 @@ export default function EditPreferencesForm() {
         <CardDescription>Update your preferences</CardDescription>
       </CardHeader>
 
-      <CardContent className="h-full">
+      <CardContent className='h-full'>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6 justify-between flex flex-col h-full'>
-            {/* Min Age */}
-            <FormField
-              control={form.control}
-              name='minAge'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Min Age</FormLabel>
-                  <FormControl>
-                    <Input
-                      type='number'
-                      min={18}
-                      {...field}
-                      value={field.value ?? ''}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className='space-y-6 justify-between flex flex-col h-full'
+          >
+            <div className='flex items-center justify-between gap4'>
+              {/* Min Age */}
+              <FormField
+                control={form.control}
+                name='minAge'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Min Age</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        min={18}
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Max Age */}
-            <FormField
-              control={form.control}
-              name='maxAge'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Max Age</FormLabel>
-                  <FormControl>
-                    <Input
-                      type='number'
-                      max={100}
-                      {...field}
-                      value={field.value ?? ''}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Max Age */}
+              <FormField
+                control={form.control}
+                name='maxAge'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Max Age</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        max={100}
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {/* Max Distance */}
-            <FormField
-              control={form.control}
-              name='maxDistance'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Max Distance (km)</FormLabel>
-                  <FormControl>
-                    <Input
-                      type='number'
-                      min={1}
-                      {...field}
-                      value={field.value ?? ''}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              {/* Max Distance */}
+              <FormField
+                control={form.control}
+                name='maxDistance'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Max Distance (km)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type='number'
+                        min={1}
+                        {...field}
+                        value={field.value ?? ''}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             {/* Gender Preferences (multi-select) */}
             <FormField
