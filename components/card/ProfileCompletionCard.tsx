@@ -57,11 +57,11 @@ export default function ProfileCompletionCard({
   const multiplier = 1.2; // Matching score multiplier when complete
   const isComplete = progress === 100;
   return (
-    <Card className='w-sm bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
+    <Card className='w-sm rounded-2xl'>
       <CardContent className='space-y-4'>
         {/* Header */}
         <div className='flex items-center justify-between'>
-          <h3 className='text-lg font-semibold text-slate-800 dark:text-slate-100'>
+          <h3 className='text-lg font-semibold text-foreground'>
             Profile Completion
           </h3>
           <span
@@ -78,7 +78,7 @@ export default function ProfileCompletionCard({
         {/* Progress Bar */}
         <Progress
           value={progress}
-          className='h-3 bg-slate-200 dark:bg-slate-700'
+          className='h-3 bg-muted'
         />
 
         {/* Completion list */}
@@ -86,16 +86,18 @@ export default function ProfileCompletionCard({
           {completionCriteria.map((item) => (
             <li
               key={item.key}
-              className='flex items-center justify-between text-sm text-slate-700 dark:text-slate-300'
+              className='flex items-center justify-between text-sm text-foreground'
             >
               <div className='flex items-center gap-2'>
                 {item.isDone ? (
                   <CheckCircle2 className='text-green-500 w-4 h-4' />
                 ) : (
-                  <XCircle className='text-red-500 w-4 h-4' />
+                  <XCircle className='text-destructive w-4 h-4' />
                 )}
                 <span>{item.label}</span>
-                <span className='text-gray-400 text-xs'>{item.isRequired ? '(Required)': null }</span>
+                {item.isRequired && (
+                  <span className='text-muted-foreground text-xs'>(Required)</span>
+                )}
               </div>
               <span
                 className={`text-xs ${
@@ -111,8 +113,8 @@ export default function ProfileCompletionCard({
         </ul>
 
         {/* Completion Summary */}
-        <div className='pt-4 border-t border-slate-200 dark:border-slate-700'>
-          <p className='text-xs text-slate-500 dark:text-slate-400 text-center'>
+        <div className='pt-4 border-t border-border'>
+          <p className='text-xs text-muted-foreground text-center'>
             {progress === 100
               ? 'Your profile is complete! Great job 🎉'
               : `Complete ${completionCriteria.length - completedCount} more ${
@@ -124,7 +126,7 @@ export default function ProfileCompletionCard({
         </div>
       </CardContent>
       {/* Circular Progress Bar in Footer */}
-      <CardFooter className='flex justify-center py-6 border-t border-slate-200 dark:border-slate-700'>
+      <CardFooter className='flex justify-center py-6 border-t border-border'>
         <div className='relative flex items-center justify-center w-28 h-28'>
           {/* Outer circle with progress */}
           <div
@@ -141,7 +143,7 @@ export default function ProfileCompletionCard({
           />
 
           {/* Inner circle background */}
-          <div className='absolute inset-2 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center shadow-inner'>
+          <div className='absolute inset-2 bg-card rounded-full flex items-center justify-center shadow-inner'>
             <div className='text-center'>
               {isComplete ? (
                 <>

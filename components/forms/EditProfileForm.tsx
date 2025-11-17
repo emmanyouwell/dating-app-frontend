@@ -174,9 +174,9 @@ export const EditProfileForm = () => {
   };
 
   return (
-    <Card className='w-full bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
+    <Card className='w-full rounded-2xl'>
       <CardHeader>
-        <div className='rounded-lg rounded-br-none rounded-bl-none animate-fade-down bg-primary dark:bg-primary h-[150px] w-full relative cover-photo'>
+        <div className='rounded-lg rounded-br-none rounded-bl-none animate-fade-down bg-primary h-[150px] w-full relative cover-photo'>
           <div className='flex justify-center w-full absolute -top-5'>
             <Avatar className='h-44 w-44 mx-auto'>
               <AvatarImage
@@ -196,7 +196,7 @@ export const EditProfileForm = () => {
           className='gap-6 space-y-2'
         >
           {/* Basic Info */}
-          <h3 className='text-lg text-primary font-semibold col-span-1 md:col-span-2'>
+          <h3 className='text-lg text-foreground font-semibold col-span-1 md:col-span-2'>
             Basic Info
           </h3>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4 w-full'>
@@ -271,7 +271,7 @@ export const EditProfileForm = () => {
             )}
           />
           {/* Profile Details */}
-          <h3 className='text-lg text-primary font-semibold col-span-1 md:col-span-2'>
+          <h3 className='text-lg text-foreground font-semibold col-span-1 md:col-span-2'>
             Profile Details
           </h3>
           <Controller
@@ -294,10 +294,10 @@ export const EditProfileForm = () => {
 
           {/* Address */}
           <div>
-            <h3 className='text-lg text-primary font-semibold col-span-1 md:col-span-2'>
+            <h3 className='text-lg text-foreground font-semibold col-span-1 md:col-span-2'>
               Address
             </h3>
-            <span className='text-xs'>
+            <span className='text-xs text-muted-foreground'>
               (If you don&apos;t see your exact location, select the closest
               location.)
             </span>
@@ -343,7 +343,7 @@ export const EditProfileForm = () => {
 
           {/* Geocode selection */}
           {loading ? (
-            <Loader className='animate-spin' />
+            <Loader className='animate-spin text-muted-foreground' />
           ) : (
             geocodeResults.length > 0 ? (
               <Controller
@@ -370,7 +370,7 @@ export const EditProfileForm = () => {
                             lat: parseFloat(selected.lat),
                           });
                         }}
-                        className='border rounded p-2 w-full text-black dark:text-white'
+                        className='border border-border rounded-md p-2 w-full bg-background text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&>option]:bg-background [&>option]:text-foreground'
                       >
                         <option value='' disabled>
                           Select a location...
@@ -477,13 +477,13 @@ export const EditProfileForm = () => {
                       {selectedInterests.map((i) => (
                         <span
                           key={i._id}
-                          className='flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm'
+                          className='flex items-center gap-1 px-2 py-1 bg-accent/20 text-blue-800 dark:text-accent-foreground rounded-full text-sm border border-accent/30'
                         >
                           {i.name}
                           <button
                             type='button'
                             onClick={() => handleRemove(i._id)}
-                            className='hover:text-red-500 focus:outline-none'
+                            className='hover:text-destructive focus:outline-none transition-colors'
                             aria-label={`Remove ${i.name}`}
                           >
                             ✕

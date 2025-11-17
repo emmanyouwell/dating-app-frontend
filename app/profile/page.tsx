@@ -23,8 +23,8 @@ const Page = () => {
   return (
     <ProtectedRoute>
       <Navbar isAuthenticated={isAuthenticated} loading={loading} />
-      <div className='flex min-h-screen items-center justify-center bg-background font-sans dark:bg-background'>
-        <main className='flex flex-col lg:flex-row min-h-screen w-full max-w-7xl justify-center bg-background dark:bg-background sm:items-start p-4 gap-4 relative'>
+      <div className='flex min-h-screen items-center justify-center bg-background font-sans'>
+        <main className='flex flex-col lg:flex-row min-h-screen w-full max-w-7xl justify-center bg-background sm:items-start p-4 gap-4 relative'>
           <div className='flex flex-col gap-4 w-full'>
             <EditProfileForm />
             <EditPreferencesForm />

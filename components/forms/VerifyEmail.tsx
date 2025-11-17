@@ -72,7 +72,7 @@ export function VerifyEmail({ user }: EmailVerificationCardProps) {
   // ✅ Render
   // -------------------------
   return (
-    <Card className='w-full border-none shadow-md bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
+    <Card className='w-full rounded-2xl'>
       <CardContent className='p-6 flex flex-col gap-4'>
         {/* Header Row */}
         <div className='flex items-center justify-between'>
@@ -88,10 +88,10 @@ export function VerifyEmail({ user }: EmailVerificationCardProps) {
             </div>
 
             <div>
-              <p className='font-medium text-sm text-slate-800 dark:text-slate-100'>
+              <p className='font-medium text-sm text-foreground'>
                 {isVerified ? 'Email verified' : 'Email not verified'}: {user?.email}
               </p>
-              <p className='text-xs text-slate-500 dark:text-slate-400'>
+              <p className='text-xs text-muted-foreground'>
                 {isVerified
                   ? 'Your account is secured.'
                   : otpSent
@@ -113,11 +113,11 @@ export function VerifyEmail({ user }: EmailVerificationCardProps) {
           <>
             {!otpSent ? (
               <Button
-                variant='secondary'
+                variant='ghost'
                 size='sm'
                 disabled={codeLoading}
                 onClick={onResend}
-                className='self-start flex items-center gap-2 mt-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200'
+                className='self-start flex items-center gap-2 mt-2'
               >
                 <RefreshCcw
                   className={`w-4 h-4 ${codeLoading ? 'animate-spin' : ''}`}

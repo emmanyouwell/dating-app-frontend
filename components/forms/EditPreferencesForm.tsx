@@ -108,7 +108,7 @@ export default function EditPreferencesForm() {
   // ✅ JSX
   // -------------------------
   return (
-    <Card className='w-full bg-linear-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-800 rounded-2xl'>
+    <Card className='w-full rounded-2xl'>
       <CardHeader>
         <CardTitle>Preferences</CardTitle>
         <CardDescription>Update your preferences</CardDescription>
@@ -120,7 +120,7 @@ export default function EditPreferencesForm() {
             onSubmit={form.handleSubmit(onSubmit)}
             className='space-y-6 justify-between flex flex-col h-full'
           >
-            <div className='flex items-center justify-between gap4'>
+            <div className='flex items-center justify-between gap-4'>
               {/* Min Age */}
               <FormField
                 control={form.control}
