@@ -13,14 +13,14 @@ export default function Home() {
 
   return (
     <>
-      <Announcement />
+      
       <Navbar isAuthenticated={isAuthenticated} loading={loading} />
 
       <div className="flex min-h-screen items-center justify-center bg-background font-sans">
         <main className="flex min-h-screen w-full max-w-7xl flex-col items-center sm:items-start p-4">
           {/* Hero Section */}
           <section className="flex flex-col md:flex-row items-center justify-between gap-4 w-full md:px-3">
-            <div className="h-full w-full rounded-3xl flex flex-col lg:flex-row items-center justify-between gap-4 bg-card text-card-foreground py-8 lg:py-0 md:px-8 shadow-sm">
+            <div className="h-full w-full rounded-3xl flex flex-col lg:flex-row items-center justify-between gap-4 bg-card text-sidebar-accent-foreground py-8 lg:py-0 md:px-8 shadow-sm">
               <div className="flex flex-col items-center lg:items-start w-full space-y-4">
                 <Typography
                   variant="h1"

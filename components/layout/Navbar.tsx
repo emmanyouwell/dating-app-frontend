@@ -114,7 +114,7 @@ const MenuButton = ({
   return (
     <div
       onClick={() => setOpen((pv) => !pv)}
-      className='text-xl font-bold h-full bg-black text-white rounded-l-md'
+      className='text-xl font-bold h-full bg-primary text-white rounded-l-md'
     >
       <motion.button
         whileHover={{ scale: 1.1 }}
