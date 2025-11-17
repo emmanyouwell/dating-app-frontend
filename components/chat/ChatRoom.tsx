@@ -86,7 +86,7 @@ export default function ChatRoom({ userId }: { userId: string }) {
           selectedUser ? 'hidden md:flex' : 'flex'
         } w-full md:w-72 border-r border-border flex-col bg-muted/40`}
       >
-        <div className='p-4 text-lg font-semibold border-b border-border'>
+        <div className='p-4 text-lg font-semibold border-b border-border text-foreground'>
           Chats
         </div>
 
@@ -102,7 +102,7 @@ export default function ChatRoom({ userId }: { userId: string }) {
               onClick={() => handleSelectUser(room.userId)}
               className={`w-full text-left flex items-center gap-3 sm:gap-4 px-3 sm:px-4 py-2 sm:py-3 border-b border-border transition-colors ${
                 room.userId === selectedUser
-                  ? 'bg-accent text-accent-foreground font-semibold'
+                  ? 'dark:bg-pink-900 bg-primary text-primary-foreground font-semibold'
                   : 'hover:bg-muted'
               }`}
             >
@@ -136,7 +136,7 @@ export default function ChatRoom({ userId }: { userId: string }) {
             >
               ← Back
             </Button>
-            <Typography variant='p' className='font-semibold truncate'>
+            <Typography variant='p' className='font-semibold truncate text-foreground'>
               {selectedRoom?.toName?.name || 'Chat'}
             </Typography>
           </div>
@@ -171,7 +171,7 @@ export default function ChatRoom({ userId }: { userId: string }) {
                     <div
                       className={`px-3 sm:px-4 py-2 rounded-2xl max-w-[85%] sm:max-w-xs wrap-break-word shadow-sm text-sm sm:text-base ${
                         isOwn
-                          ? 'bg-primary text-primary-foreground rounded-br-none'
+                          ? 'dark:bg-pink-900 bg-primary text-primary-foreground rounded-br-none'
                           : 'bg-muted text-foreground rounded-bl-none'
                       }`}
                     >

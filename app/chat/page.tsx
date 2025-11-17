@@ -13,8 +13,8 @@ export default function ChatPage() {
   // Show loader while checking authentication
   if (loading) {
     return (
-      <div className='flex h-screen items-center justify-center'>
-        <Loader className='animate-spin' />
+      <div className='flex h-screen items-center justify-center bg-background'>
+        <Loader className='animate-spin text-muted-foreground' />
       </div>
     );
   }
@@ -22,8 +22,8 @@ export default function ChatPage() {
   // Redirect or show message if user is not logged in
   if (!user) {
     return (
-      <div className='flex h-screen items-center justify-center'>
-        <p className='text-gray-500'>You must be logged in to access chat.</p>
+      <div className='flex h-screen items-center justify-center bg-background'>
+        <p className='text-muted-foreground'>You must be logged in to access chat.</p>
       </div>
     );
   }
@@ -31,7 +31,7 @@ export default function ChatPage() {
   return (
     <ProtectedRoute profileCheck>
     <Navbar isAuthenticated={isAuthenticated} loading={loading}/>
-    <div className='w-full h-screen p-8'>
+    <div className='w-full h-screen p-8 bg-background'>
       <ChatRoom userId={user.id} />
     </div>
     </ProtectedRoute>
