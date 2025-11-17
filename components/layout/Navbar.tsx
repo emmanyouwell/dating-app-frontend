@@ -57,7 +57,7 @@ const Navbar = ({
     <motion.nav
       animate={open ? 'open' : 'closed'}
       initial='closed'
-      className='z-1000 bg-white rounded-md text-black shadow-lg flex items-center justify-between fixed bottom-8 left-[50%] -translate-x-[50%]'
+      className='z-1000 bg-card border border-border rounded-md text-foreground shadow-lg flex items-center justify-between fixed bottom-8 left-[50%] -translate-x-[50%]'
     >
       <MenuButton setOpen={setOpen} open={open} />
       <div className='flex gap-6 px-6'>
@@ -84,7 +84,7 @@ interface LinkProps {
 
 const NavLink = ({ text, Icon, href, onClick }: LinkProps) => {
   const baseClasses =
-    'text-sm w-12 hover:text-indigo-500 transition-colors flex flex-col gap-1 items-center';
+    'text-sm w-12 text-foreground hover:text-primary transition-colors flex flex-col gap-1 items-center';
 
   // If href exists, render a Next.js link
   if (href) {
@@ -114,7 +114,7 @@ const MenuButton = ({
   return (
     <div
       onClick={() => setOpen((pv) => !pv)}
-      className='text-xl font-bold h-full bg-primary text-white rounded-l-md'
+      className='text-xl font-bold h-full bg-background text-foreground rounded-l-md'
     >
       <motion.button
         whileHover={{ scale: 1.1 }}
@@ -159,7 +159,7 @@ const Menu = () => {
     <motion.div
       variants={menuVariants}
       style={{ transformOrigin: 'bottom', x: '-50%' }}
-      className='p-8 rounded-md bg-white shadow-lg absolute bottom-[125%] left-[50%] flex w-full max-w-lg'
+      className='p-8 rounded-md bg-card border border-border shadow-lg absolute bottom-[125%] left-[50%] flex w-full max-w-lg'
     >
       <div className='flex flex-col gap-2 w-1/2'>
         <SectionTitle text='Settings' />
@@ -182,7 +182,7 @@ const SectionTitle = ({ text }: { text: string }) => {
   return (
     <motion.h4
       variants={menuLinkVariants}
-      className='text-sm mb-2 font-semibold'
+      className='text-sm mb-2 font-semibold text-foreground'
     >
       {text}
     </motion.h4>
@@ -209,7 +209,7 @@ const MenuLink = ({
       href={href ? href : '#'}
       rel='nofollow'
       onClick={handleClick}
-      className='text-sm hover:text-indigo-500 transition-colors flex items-center gap-2'
+      className='text-sm text-foreground hover:text-primary transition-colors flex items-center gap-2'
     >
       {currentTheme && currentTheme === 'light' ? <Sun size={16}/> : currentTheme === 'dark' ? <Moon size={16}/> : ''}{' '}{text}
     </motion.a>
