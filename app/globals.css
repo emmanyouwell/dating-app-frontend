@@ -45,33 +45,33 @@
 :root {
   --radius: 0.625rem;
 
-  /* Base Colors */
+  /* Base Colors - Golden Ratio Generated (Keep as is) */
   --primary: oklch(0.75 0.15 345); /* Pink - main brand */
   --secondary: oklch(0.8 0.09 122.5); /* Mint-green - harmony tone */
   --accent: oklch(0.78 0.12 207.5); /* Sky blue - accent balance */
 
-  /* Backgrounds & Foregrounds */
-  --background: oklch(0.98 0.02 345);
-  --foreground: oklch(0.15 0.03 345);
+  /* Backgrounds & Foregrounds - Improved Neutral Palette */
+  --background: oklch(0.99 0.005 30); /* Warm neutral white, minimal tint */
+  --foreground: oklch(0.18 0.01 30); /* Rich dark with subtle warmth */
 
-  --card: oklch(0.99 0.02 345);
-  --card-foreground: oklch(0.15 0.03 345);
-  --popover: oklch(0.99 0.02 345);
-  --popover-foreground: oklch(0.15 0.03 345);
+  --card: oklch(1 0 0); /* Pure white for cards */
+  --card-foreground: oklch(0.18 0.01 30);
+  --popover: oklch(1 0 0); /* Pure white for popovers */
+  --popover-foreground: oklch(0.18 0.01 30);
 
-  /* Interactive */
-  --primary-foreground: oklch(0.98 0.02 50);
-  --secondary-foreground: oklch(0.15 0.03 345);
-  --accent-foreground: oklch(0.98 0.02 50);
+  /* Interactive - Optimized for contrast */
+  --primary-foreground: oklch(0.99 0.005 30); /* Clean white for primary text */
+  --secondary-foreground: oklch(0.18 0.01 30); /* Dark for secondary text */
+  --accent-foreground: oklch(0.99 0.005 30); /* Clean white for accent text */
 
-  /* Support */
-  --muted: oklch(0.93 0.03 345);
-  --muted-foreground: oklch(0.35 0.03 345);
-  --destructive: oklch(0.6 0.24 25);
+  /* Support - Subtle and harmonious */
+  --muted: oklch(0.96 0.005 30); /* Very subtle warm gray */
+  --muted-foreground: oklch(0.45 0.01 30); /* Medium gray for muted text */
+  --destructive: oklch(0.58 0.22 25); /* Refined red for errors */
 
-  /* Borders & Inputs */
-  --border: oklch(0.9 0.02 345);
-  --input: oklch(0.95 0.02 345);
+  /* Borders & Inputs - Clean and visible */
+  --border: oklch(0.88 0.01 30); /* Subtle warm border */
+  --input: oklch(0.97 0.005 30); /* Clean input background */
   --ring: var(--primary);
 
   /* Charts (based on harmony) */
@@ -82,43 +82,43 @@
   --chart-5: oklch(0.9 0.1 310);
 
   /* Sidebar */
-  --sidebar: oklch(0.99 0.02 345);
-  --sidebar-foreground: oklch(0.15 0.03 345);
+  --sidebar: oklch(0.98 0.005 30); /* Slightly off-white */
+  --sidebar-foreground: oklch(0.18 0.01 30);
   --sidebar-primary: var(--primary);
-  --sidebar-primary-foreground: oklch(0.98 0.02 50);
+  --sidebar-primary-foreground: oklch(0.99 0.005 30);
   --sidebar-accent: var(--secondary);
-  --sidebar-accent-foreground: oklch(0.15 0.03 345);
+  --sidebar-accent-foreground: oklch(0.18 0.01 30);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
 }
 
 .dark {
-  /* Base */
-  --background: oklch(0.13 0.03 345);
-  --foreground: oklch(0.98 0.02 50);
+  /* Base - Warmer, more comfortable dark mode */
+  --background: oklch(0.12 0.01 30); /* Warm dark, not pure black */
+  --foreground: oklch(0.95 0.005 30); /* Soft warm white, easier on eyes */
 
-  --card: oklch(0.18 0.03 345);
-  --card-foreground: oklch(0.98 0.02 50);
-  --popover: oklch(0.18 0.03 345);
-  --popover-foreground: oklch(0.98 0.02 50);
+  --card: oklch(0.16 0.01 30); /* Elevated card with subtle warmth */
+  --card-foreground: oklch(0.95 0.005 30);
+  --popover: oklch(0.16 0.01 30); /* Elevated popover */
+  --popover-foreground: oklch(0.95 0.005 30);
 
-  /* Harmonious colors with slightly elevated chroma */
+  /* Harmonious colors with slightly elevated chroma (Keep as is) */
   --primary: oklch(0.8 0.18 345);
   --secondary: oklch(0.75 0.1 122.5);
   --accent: oklch(0.75 0.13 207.5);
 
-  --primary-foreground: oklch(0.98 0.02 50);
-  --secondary-foreground: oklch(0.98 0.02 50);
-  --accent-foreground: oklch(0.98 0.02 50);
+  --primary-foreground: oklch(0.95 0.005 30); /* Soft white for primary text */
+  --secondary-foreground: oklch(0.95 0.005 30); /* Soft white for secondary text */
+  --accent-foreground: oklch(0.95 0.005 30); /* Soft white for accent text */
 
-  /* Support */
-  --muted: oklch(0.25 0.03 345);
-  --muted-foreground: oklch(0.75 0.1 345);
-  --destructive: oklch(0.55 0.25 20);
+  /* Support - Better contrast and visibility */
+  --muted: oklch(0.22 0.01 30); /* Subtle warm gray for muted backgrounds */
+  --muted-foreground: oklch(0.65 0.01 30); /* Lighter gray for muted text */
+  --destructive: oklch(0.62 0.22 25); /* Slightly brighter red for dark mode */
 
-  /* Borders & Inputs */
-  --border: oklch(0.25 0.02 345);
-  --input: oklch(0.25 0.02 345);
+  /* Borders & Inputs - More visible in dark mode */
+  --border: oklch(0.28 0.01 30); /* Visible but subtle warm border */
+  --input: oklch(0.18 0.01 30); /* Slightly lighter than card for inputs */
   --ring: var(--primary);
 
   /* Charts */
@@ -129,13 +129,13 @@
   --chart-5: oklch(0.5 0.08 310);
 
   /* Sidebar */
-  --sidebar: oklch(0.18 0.03 345);
-  --sidebar-foreground: oklch(0.98 0.02 50);
+  --sidebar: oklch(0.14 0.01 30); /* Slightly lighter than background */
+  --sidebar-foreground: oklch(0.95 0.005 30);
   --sidebar-primary: var(--primary);
-  --sidebar-primary-foreground: oklch(0.98 0.02 50);
+  --sidebar-primary-foreground: oklch(0.95 0.005 30);
   --sidebar-accent: var(--secondary);
-  --sidebar-accent-foreground: oklch(0.98 0.02 50);
-  --sidebar-border: oklch(0.25 0.02 345);
+  --sidebar-accent-foreground: oklch(0.95 0.005 30);
+  --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
 }
 
