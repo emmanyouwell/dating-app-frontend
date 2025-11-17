@@ -47,7 +47,7 @@ export default function Home() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="border-accent text-accent hover:bg-accent hover:text-accent-foreground transition-colors"
+                    className="border-accent dark:bg-accent text-accent dark:text-accent-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
                   >
                     <Link href="/chat">Chat now</Link>
                   </Button>
