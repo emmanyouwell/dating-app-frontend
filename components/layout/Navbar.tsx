@@ -36,15 +36,21 @@ const Navbar = ({
   const { theme, setTheme } = useTheme();
   
   const handleLogout = async () => {
-    // Call logout API via Redux (clears cookie on backend)
-    await dispatch(logoutUser());
-    // Clear chat state
+    // 1. Disconnect socket first to prevent any new messages/events
+    if (socket) {
+      socket.disconnect();
+    }
+    
+    // 2. Clear chat state immediately to prevent data leakage
     dispatch(clearChat());
-    // Clear session state in Context
+    
+    // 3. Call logout API via Redux (clears cookie on backend)
+    await dispatch(logoutUser());
+    
+    // 4. Clear session state in Context
     await logoutContext();
-    // Disconnect socket
-    if (socket) socket.disconnect();
-    // Redirect to login
+    
+    // 5. Redirect to login
     router.push('/login');
   };
   return (
